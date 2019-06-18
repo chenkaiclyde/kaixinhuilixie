@@ -100,7 +100,7 @@ class Order(db.Model):
     '''订单表'''
     __tablename__ = "tb_order"
 
-    order_id = db.Column(db.String(50), nullable=False, default='')  # 订单id
+    order_id = db.Column(db.String(50), nullable=False, default='', primary_key=True)  # 订单id
     payment = db.Column(db.String(50), default=None)  # 实付金额。精确到2位小数;单位：元。如：200.07，表示：200元7分
     payment_type = db.Column(db.Integer, default=None)  # 支付类型， 1.在线支付, 2.货到付款
     post_fee = db.Column(db.String(50), default=None)  # 邮费。精确到2位小数;单位:元。如:200.07，表示:200元7分
