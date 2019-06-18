@@ -6,3 +6,9 @@ from info import db
 from info.models import User
 from info.response_code import RET
 from . import index_blu
+
+
+@index_blu.route('/')
+def index():
+    data = {}
+    return render_template('index/index.html',data=data)
