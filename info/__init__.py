@@ -71,12 +71,12 @@ def create_app(config_name):
         return response
 
     from info.utils.commons import user_login_data
-    @app.errorhandler(404)
-    @user_login_data
-    def page_not_found(_):
-        user = g.user
-        data = {"user_info": user.to_dict() if user else None}
-        return render_template('index/404.html', data=data)
+    # @app.errorhandler(404)
+    # @user_login_data
+    # def page_not_found(_):
+    #     user = g.user
+    #     data = {"user_info": user.to_dict() if user else None}
+    #     return render_template('index/404.html', data=data)
 
     # 注册自定义过滤器
     app.add_template_filter(do_index_class, 'index_class')
