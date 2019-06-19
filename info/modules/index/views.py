@@ -71,46 +71,49 @@ def login():
     data = {}
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 @index_blu.route('/register', methods=["GET", "POST"])
 def register():
     '''注册'''
+    data = {}
 
-    # 1获取参数
-    param_dict = request.json
-    username = param_dict.get('username')
-    email = param_dict.get('email')
-    password = param_dict.get('password')
-    repeatpassword = param_dict.get("repeatpassword")
-    print(11111111)
-    # 2校验参数
-    if not all([username, email, password, repeatpassword]):
-        return jsonify(errno=RET.PARAMERR, errmsg='参数不能为空')
-
-    # 初始化User对象添加到数据
-    user = User()
-    user.username = username
-    # 最后一个登录时间
-    user.last_login = datetime.now()
-    # 密码  加密
-    user.password = password
-
-    try:
-        db.session.add(user)
-        db.session.commit()
-
-    except Exception as e:
-        current_app.logger.error(e)
-        # 回滚
-        db.session.rollback()
-        return jsonify(errno=RET.DBERR, errmsg='数据保存失败')
-
-    print('user_id----%s' % user.id)
-    # 5.保存用户的登录状态
-    session['user_id'] = user.id
-    session['username'] = user.username
-    session['password'] = user.password
-    # 6返回相应
-    return jsonify(errno=RET.OK, errmsg='注册成功')
 
 
 @index_blu.route('/myAccount')

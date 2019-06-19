@@ -10,7 +10,7 @@ class Config(object):
     SECRET_KEY = 'p7q80oz6abLYSuDMTYHsAHCunGaFxvMKkEV/QDrTBQ1Jf7SYrfoIMueoc02AfhCY'
 
     # 数据库的配置信息
-    SQLALCHEMY_DATABASE_URI = 'mysql+pymysql://root:mysql@localhost:3306/tianmaoshangcheng'
+    SQLALCHEMY_DATABASE_URI = 'mysql+pymysql://root:mysql@localhost:3306/kaixinhuilixie'
     # 关闭追踪数据库的修改
     SQLALCHEMY_TRACK_MODIFICATIONS = False
 
