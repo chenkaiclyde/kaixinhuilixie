@@ -540,7 +540,7 @@
                                 </div>
                             </form>
                         </div>
-<<<<<<< HEAD
+
                     </div>
                     <!-- Login Content End -->
 
@@ -550,48 +550,27 @@
                             <h4>Singup Form</h4>
                             <form action="#" method="post">
                                 <div class="single-input-item">
-                                    <input type="text" placeholder="Full Name" required/>
+                                    <input type="text" id="username" placeholder="Full Name" required/>
                                 </div>
                                 <div class="single-input-item">
-                                    <input type="email" placeholder="Enter your Email" required/>
+                                    <input type="email" id="email" placeholder="Enter your Email" required/>
                                 </div>
                                 <div class="row">
                                     <div class="col-lg-6">
                                         <div class="single-input-item">
-                                            <input type="password" placeholder="Enter your Password" required/>
+                                            <input type="password" id="password" placeholder="Enter your Password"
+                                                   required/>
                                         </div>
                                     </div>
                                     <div class="col-lg-6">
                                         <div class="single-input-item">
-                                            <input type="password" placeholder="Repeat your Password" required/>
-=======
-                        <!-- Login Content End -->
+                                            <input type="password" id="repeatpassword"
+                                                   placeholder="Repeat your Password" required/>
+                                        </div>
 
-                        <!-- Register Content Start -->
-                        <div class="col-lg-6">
-                            <div class="login-reg-form-wrap sign-up-form">
-                                <h4>Singup Form</h4>
-                                <form action="#" method="post">
-                                    <div class="single-input-item">
-                                        <input type="text" id="username" placeholder="Full Name" required />
-                                    </div>
-                                    <div class="single-input-item">
-                                        <input type="email" id="email" placeholder="Enter your Email" required />
-                                    </div>
-                                    <div class="row">
-                                        <div class="col-lg-6">
-                                            <div class="single-input-item">
-                                                <input type="password" id="password" placeholder="Enter your Password" required />
-                                            </div>
-                                        </div>
-                                        <div class="col-lg-6">
-                                            <div class="single-input-item">
-                                                <input type="password" id="repeatpassword" placeholder="Repeat your Password" required />
-                                            </div>
->>>>>>> origin/master
-                                        </div>
                                     </div>
                                 </div>
+
                                 <div class="single-input-item">
                                     <div class="login-reg-form-meta">
                                         <div class="remember-meta">
@@ -602,25 +581,22 @@
                                             </div>
                                         </div>
                                     </div>
-<<<<<<< HEAD
+
                                 </div>
+
+
                                 <div class="single-input-item">
-                                    <button class="btn btn-sqr">Register</button>
+                                    <button class="btn btn-sqr " id="register">Register</button>
                                 </div>
                             </form>
-=======
-                                    <div class="single-input-item">
-                                        <button class="btn btn-sqr " id="register">Register</button>
-                                    </div>
-                                </form>
-                            </div>
->>>>>>> origin/master
                         </div>
+
                     </div>
-                    <!-- Register Content End -->
                 </div>
+                <!-- Register Content End -->
             </div>
         </div>
+    </div>
     </div>
     <!-- login register wrapper end -->
 </main>
@@ -866,7 +842,7 @@
             "username": username,
             "email": email,
             "password": password,
-            "repeatpassword":repeatpassword,
+            "repeatpassword": repeatpassword,
         }
 
         $.ajax({
