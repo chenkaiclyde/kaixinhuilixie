@@ -6,7 +6,7 @@ from flask import Flask, render_template, g
 from flask_session import Session
 from flask_sqlalchemy import SQLAlchemy
 
-from flask_wtf.csrf import generate_csrf
+from flask_wtf.csrf import generate_csrf, CSRFProtect
 
 from config import config
 
@@ -49,7 +49,7 @@ def create_app(config_name):
     app.config.from_object(config[config_name])
 
     # 开启了csrf保护
-    # CSRFProtect(app)
+    CSRFProtect(app)
 
     # 很多的flask的扩展 都需要 先生成对象 再去初始化
     db.init_app(app)

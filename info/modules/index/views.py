@@ -60,8 +60,9 @@ def contactUs():
 @index_blu.route('/loginRegister')
 def loginRegister():
     '''显示登录注册页面'''
-    data = {}
+
     if request.method == "GET":
+        data = {}
         return render_template('index/login-register.html', data=data)
 
 
@@ -104,7 +105,7 @@ def register():
     password = param_dict.get('password')
     repeatpassword = param_dict.get('repeatpassword')
     # 2校验参数
-    if not all([email, username, password,repeatpassword]):
+    if not all([email, username, password, repeatpassword]):
         return jsonify(errno=RET.PARAMERR, errmsg='参数不能为空')
 
     # 初始化User对象添加到数据
