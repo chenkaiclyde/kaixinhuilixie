@@ -57,12 +57,56 @@ def contactUs():
     return render_template('index/contact-us.html', data=data)
 
 
+@index_blu.route('/loginRegister')
+def loginRegister():
+    '''显示登录注册页面'''
+    data = {}
+    if request.method == "GET":
+        return render_template('index/login-register.html', data=data)
+
+
 @index_blu.route('/login', methods=["GET", "POST"])
 def login():
     '''登录'''
     data = {}
-    if request.method == "GET":
-        return render_template('index/login-register.html', data=data)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 @index_blu.route('/register', methods=["GET", "POST"])
