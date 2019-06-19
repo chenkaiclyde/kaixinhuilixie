@@ -100,7 +100,6 @@ def register():
     data = {}
 
 
-
 @index_blu.route('/myAccount')
 def myAccount():
     '''我的账户页面'''
