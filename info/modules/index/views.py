@@ -68,45 +68,30 @@ def loginRegister():
 @index_blu.route('/login', methods=["GET", "POST"])
 def login():
     '''登录'''
-    data = {}
+    username = request.form.get("username")
+    password = request.form.get("password")
+    if not all([username, password]):
+        return jsonify(errno=RET.PARAMERR, errmsg="参数不足")
 
+    try:
+        # 陈老板 快写查询
+        user = ...
+    except Exception as e:
+        current_app.logger.error(e)
+        return jsonify(errno=RET.DBERR, errmsg="数据查询失败")
 
+    if not user:
+        return jsonify(errno=RET.PARAMERR, errmsg="用户不存在")
 
+    # 验证密码
+    # 陈老板 记得写验证密码的函数
+    if not user.check_password(password):
+        return jsonify(errno=RET.PARAMERR, errmsg="密码错误")
 
+    # 存放用户登录的状态
+    session["user"] = username
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+    return jsonify(errno=RET.OK, errmsg="登录成功", user=username)
 
 
 @index_blu.route('/register', methods=["GET", "POST"])
