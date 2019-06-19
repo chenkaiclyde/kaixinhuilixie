@@ -1,6 +1,5 @@
 import datetime
 
-
 from flask import render_template, current_app, request, jsonify, session
 
 from info import db
@@ -58,20 +57,23 @@ def contactUs():
     return render_template('index/contact-us.html', data=data)
 
 
+@index_blu.route('/loginRegister')
+def loginRegister():
+    '''显示登录注册页面'''
+    data = {}
+    if request.method == "GET":
+        return render_template('index/login-register.html', data=data)
+
+
 @index_blu.route('/login', methods=["GET", "POST"])
 def login():
     '''登录'''
     data = {}
-    if request.method == "GET":
-        return render_template('index/login-register.html', data=data)
 
 
 @index_blu.route('/register', methods=["GET", "POST"])
 def register():
     '''注册'''
-    data = {}
-    if request.method == "GET":
-        return render_template('index/login-register.html', data=data)
 
     # 1获取参数
     param_dict = request.json
@@ -79,8 +81,9 @@ def register():
     email = param_dict.get('email')
     password = param_dict.get('password')
     repeatpassword = param_dict.get("repeatpassword")
+    print(11111111)
     # 2校验参数
-    if not all([username, email, password,repeatpassword]):
+    if not all([username, email, password, repeatpassword]):
         return jsonify(errno=RET.PARAMERR, errmsg='参数不能为空')
 
     # 初始化User对象添加到数据
@@ -93,12 +96,9 @@ def register():
 
     try:
         db.session.add(user)
-        print('333333')
         db.session.commit()
 
-        print('111111')
     except Exception as e:
-        print('2222')
         current_app.logger.error(e)
         # 回滚
         db.session.rollback()
@@ -111,8 +111,6 @@ def register():
     session['password'] = user.password
     # 6返回相应
     return jsonify(errno=RET.OK, errmsg='注册成功')
-
-
 
 
 @index_blu.route('/myAccount')

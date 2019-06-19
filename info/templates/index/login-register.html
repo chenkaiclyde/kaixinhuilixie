@@ -533,7 +533,7 @@
                         <div class="col-lg-6">
                             <div class="login-reg-form-wrap sign-up-form">
                                 <h4>Singup Form</h4>
-                                <form action="#" method="post">
+                                <form>
                                     <div class="single-input-item">
                                         <input type="text" id="username" placeholder="Full Name" required />
                                     </div>
@@ -564,7 +564,7 @@
                                         </div>
                                     </div>
                                     <div class="single-input-item">
-                                        <button class="btn btn-sqr">Register</button>
+                                        <button class="btn btn-sqr " id="register">Register</button>
                                     </div>
                                 </form>
                             </div>
@@ -765,15 +765,13 @@
 
 <script>
 // TODO 注册按钮点击
-    $("#btn btn-sqr").click(function (e) {
+    $("#register").submit(function () {
 
         // 取到用户输入的内容
         var username = $("#username").val()
         var email = $("#email").val()
         var password = $("#password").val()
         var repeatpassword = $('#repeatpassword').val()
-
-
 
         // 发起注册请求
         var params = {
@@ -784,7 +782,7 @@
         }
 
         $.ajax({
-            url: "/index/register",
+            url: "/register",
             type: "post",
             headers: {
                 "X-CSRFToken": getCookie("csrf_token")
@@ -795,10 +793,9 @@
             success: function (data) {
                 if (data.errno == "0") {
                     // 跳转到主界面
-                    window.location('/')
+                    window.location.href('/')
                 } else {
-                    $("#register-password-err").html(data.errmsg)
-                    $("#register-password-err").show()
+                    alert(error.msg)
                 }
             },
             error: function (e) {
