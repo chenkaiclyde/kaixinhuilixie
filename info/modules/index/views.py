@@ -113,7 +113,6 @@ def register():
     # 6返回相应
     return jsonify(errno=RET.OK, errmsg='注册成功')
 
-
 @index_blu.route('/myAccount')
 def myAccount():
     '''我的账户页面'''
