@@ -109,31 +109,28 @@ def register():
         return jsonify(errno=RET.PARAMERR, errmsg='参数不能为空')
 
     # 初始化User对象添加到数据
-    user = User()
-    user.username = username
-    # 最后一个登录时间
-    user.last_login = datetime.now()
+    # user = User()
+    # user.username = username
+
     # 密码  加密
-    user.password = password
 
-    try:
-        db.session.add(user)
-        print('333333')
-        db.session.commit()
+    # try:
+    #     db.session.add(user)
+    #     print('333333')
+    #     db.session.commit()
+    #
+    #     print('111111')
+    # except Exception as e:
+    #     print('2222')
+    #     current_app.logger.error(e)
+    #     # 回滚
+    #     db.session.rollback()
+    #     return jsonify(errno=RET.DBERR, errmsg='数据保存失败')
 
-        print('111111')
-    except Exception as e:
-        print('2222')
-        current_app.logger.error(e)
-        # 回滚
-        db.session.rollback()
-        return jsonify(errno=RET.DBERR, errmsg='数据保存失败')
-
-    print('user_id----%s' % user.id)
+    # print('user_id----%s' % user.id)
     # 5.保存用户的登录状态
-    session['user_id'] = user.id
-    session['username'] = user.username
-    session['password'] = user.password
+    # session['user_id'] = user.id
+    # session['username'] = user.username
     # 6返回相应
     return jsonify(errno=RET.OK, errmsg='注册成功')
 

@@ -841,9 +841,6 @@
             $.ajax({
                 url: "/register",
                 type: "post",
-                headers: {
-                    "X-CSRFToken": getCookie("csrf_token")
-                },
                 data: JSON.stringify(params),
                 contentType: "application/json",
                 dataType: 'json',
