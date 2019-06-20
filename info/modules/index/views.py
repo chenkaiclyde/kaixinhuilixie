@@ -69,9 +69,14 @@ def loginRegister():
 @index_blu.route('/login', methods=["GET", "POST"])
 def login():
     '''登录'''
-    username = request.form.get("username")
-    password = request.form.get("password")
-    if not all([username, password]):
+    params_dict = request.json
+    email = params_dict.get("email")
+    password = params_dict.get("password")
+
+    print(request.json)
+    print(email)
+    print(password)
+    if not all([email, password]):
         return jsonify(errno=RET.PARAMERR, errmsg="参数不足")
 
     try:
@@ -108,29 +113,47 @@ def register():
     if not all([email, username, password, repeatpassword]):
         return jsonify(errno=RET.PARAMERR, errmsg='参数不能为空')
 
+    # 判断邮箱是否存在
+    result = None
+    try:
+        result = User.query.filter(User.email == email).first()
+    except Exception as e:
+        current_app.logger.error(e)
+        return jsonify(errno=RET.DBERR, errmsg='数据查询错误')
+    if result:
+        return jsonify(errno=RET.DATAEXIST, errmsg='数据已存在')
+    # 判断用户名是否存在
+    result = None
+    try:
+        result = User.query.filter(User.username == username).first()
+    except Exception as e:
+        current_app.logger.error(e)
+        return jsonify(errno=RET.DBERR, errmsg='数据查询错误')
+    if result:
+        return jsonify(errno=RET.DATAEXIST, errmsg='数据已存在')
+
     # 初始化User对象添加到数据
-    # user = User()
-    # user.username = username
+    user = User()
+    user.username = username
+    user.password = password
+    user.email = email
+    user.mobile = username
+    user.gender = 0  # 0代表male，1代表female
 
     # 密码  加密
+    try:
+        db.session.add(user)
+        db.session.commit()
 
-    # try:
-    #     db.session.add(user)
-    #     print('333333')
-    #     db.session.commit()
-    #
-    #     print('111111')
-    # except Exception as e:
-    #     print('2222')
-    #     current_app.logger.error(e)
-    #     # 回滚
-    #     db.session.rollback()
-    #     return jsonify(errno=RET.DBERR, errmsg='数据保存失败')
+    except Exception as e:
+        current_app.logger.error(e)
+        # 回滚
+        db.session.rollback()
+        return jsonify(errno=RET.DBERR, errmsg='数据保存失败')
 
-    # print('user_id----%s' % user.id)
     # 5.保存用户的登录状态
-    # session['user_id'] = user.id
-    # session['username'] = user.username
+    session['user_id'] = user.id
+    session['username'] = user.username
     # 6返回相应
     return jsonify(errno=RET.OK, errmsg='注册成功')
 

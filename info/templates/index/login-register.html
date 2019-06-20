@@ -536,7 +536,7 @@
                                     </div>
                                 </div>
                                 <div class="single-input-item">
-                                    <button class="btn btn-sqr">Login</button>
+                                    <button class="btn btn-sqr" id="loginbtn">Login</button>
                                 </div>
                             </form>
                         </div>
@@ -790,15 +790,15 @@
 
 <script>
     $(function () {
-        $("#loginbtn").click(function () {
-            var username = $("#loginuser").val();
+        $("#loginbtn").click(function (e) {
+            e.preventDefault();
+            var email = $("#loginuser").val();
             var password = $("#loginpwd").val()
 
             params = {
-                "user": username,
+                "email": email,
                 "password": password,
             };
-
             // 发起登录请求
             $.ajax({
                 url: '/login',
@@ -830,7 +830,6 @@
             var email = $("#register_email").val()
             var password = $("#register_password").val()
             var repeatpassword = $("#register_repeatpassword").val()
-            alert(username + email + password + repeatpassword)
             // 发起注册请求
             var params = {
                 "username": username,
@@ -847,7 +846,7 @@
                 dataType: 'json',
                 success: function (data) {
                     if (data.errno == "0") {
-                        alert("6666")
+                        window.location.href = '/'
                     } else {
                         alert(data.errmsg)
                     }

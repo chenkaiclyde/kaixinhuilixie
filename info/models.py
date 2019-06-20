@@ -43,6 +43,19 @@ class User(BaseModel, db.Model):
     shipping_cars = db.relationship('ShippingAddress', backref='user', lazy='dynamic')
     order_forms = db.relationship('OrderForm', backref='user', lazy='dynamic')
 
+    @property
+    def password(self):
+        raise AttributeError('当前属性不可读')
+
+    @password.setter
+    def password(self, value):
+        # self.password_hash = 加密(value)
+        self.password_hash = generate_password_hash(value)
+
+    def check_password(self, password):
+        '''校验密码'''
+        return check_password_hash(self.password_hash, password)
+
 
 class ShippingAddress(BaseModel, db.Model):
     """收货地址"""
@@ -66,7 +79,7 @@ class Product(BaseModel, db.Model):
     all_nums = db.Column(db.INTEGER, nullable=False, default=0)  # 商品数量
     status = db.Column(db.INTEGER, nullable=False, default=2)  # 商品状态:0上架中，1下架，2审核中
     brand_id = db.Column(db.INTEGER, db.ForeignKey('brand.b_id'), nullable=False)  # 品牌id
-    seller_id = db.Column(db.INTEGER, nullable=False)  # 卖家id
+    seller_id = db.Column(db.INTEGER, db.ForeignKey('seller.id'), nullable=False)  # 卖家id
     grade = db.Column(db.INTEGER, nullable=False, default=0)  # 商品评分，默认是0
 
     attrs = db.relationship('ProductSizeColor', backref='products', secondary='product_params')
