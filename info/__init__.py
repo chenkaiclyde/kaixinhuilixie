@@ -6,7 +6,7 @@ from flask import Flask, render_template, g
 from flask_session import Session
 from flask_sqlalchemy import SQLAlchemy
 
-from flask_wtf.csrf import generate_csrf, CSRFProtect
+from flask_wtf.csrf import generate_csrf
 
 from config import config
 
