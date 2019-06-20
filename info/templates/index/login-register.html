@@ -824,6 +824,7 @@
         })
         // TODO 注册按钮点击
         $("#register").click(function (e) {
+            e.preventDefault();
             // 取到用户输入的内容
             var username = $("#register_username").val()
             var email = $("#register_email").val()
