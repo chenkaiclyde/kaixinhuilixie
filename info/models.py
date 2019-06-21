@@ -68,92 +68,98 @@ class User(BaseModel, db.Model):
         }
         return output_data_dict
 
-    class ShippingAddress(BaseModel, db.Model):
-        """收货地址"""
-        __tablename__ = "shipping_address"
-        id = db.Column(db.Integer, primary_key=True)  # 收件地址id
-        user_id = db.Column(db.Integer, db.ForeignKey('user.id'))  # 用户编号
-        address = db.Column(db.String(100), nullable=False)  # 地址
-        nickname = db.Column(db.String(20), nullable=False)  # 收件人姓名
-        phoneNumber = db.Column(db.String(30), nullable=False)  # 收件人手机号
 
-    class Product(BaseModel, db.Model):
-        """商品"""
-        __tablename__ = "product"
+class ShippingAddress(BaseModel, db.Model):
+    """收货地址"""
+    __tablename__ = "shipping_address"
+    id = db.Column(db.Integer, primary_key=True)  # 收件地址id
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'))  # 用户编号
+    address = db.Column(db.String(100), nullable=False)  # 地址
+    nickname = db.Column(db.String(20), nullable=False)  # 收件人姓名
+    phoneNumber = db.Column(db.String(30), nullable=False)  # 收件人手机号
 
-        id = db.Column(db.Integer, primary_key=True, nullable=False)  # 收件地址id
-        title = db.Column(db.String(255), nullable=False)  # 商品标题
-        price = db.Column(db.INTEGER, nullable=False)  # 商品价格
-        describe = db.Column(db.String(255), nullable=True)  # 商品描述
-        category_id = db.Column(db.INTEGER, db.ForeignKey('category.c_id'), nullable=False)  # 商品种类
-        all_nums = db.Column(db.INTEGER, nullable=False, default=0)  # 商品数量
-        status = db.Column(db.INTEGER, nullable=False, default=2)  # 商品状态:0上架中，1下架，2审核中
-        brand_id = db.Column(db.INTEGER, db.ForeignKey('brand.b_id'), nullable=False)  # 品牌id
-        seller_id = db.Column(db.INTEGER, db.ForeignKey('seller.id'), nullable=False)  # 卖家id
-        grade = db.Column(db.INTEGER, nullable=False, default=0)  # 商品评分，默认是0
 
-        attrs = db.relationship('ProductSizeColor', backref='products', secondary='product_params')
+class Product(BaseModel, db.Model):
+    """商品"""
+    __tablename__ = "product"
 
-    class OrderForm(BaseModel, db.Model):
-        """订单"""
-        __tablename__ = "order_form"
+    id = db.Column(db.Integer, primary_key=True, nullable=False)  # 收件地址id
+    title = db.Column(db.String(255), nullable=False)  # 商品标题
+    price = db.Column(db.INTEGER, nullable=False)  # 商品价格
+    describe = db.Column(db.String(255), nullable=True)  # 商品描述
+    category_id = db.Column(db.INTEGER, db.ForeignKey('category.c_id'), nullable=False)  # 商品种类
+    all_nums = db.Column(db.INTEGER, nullable=False, default=0)  # 商品数量
+    status = db.Column(db.INTEGER, nullable=False, default=2)  # 商品状态:0上架中，1下架，2审核中
+    brand_id = db.Column(db.INTEGER, db.ForeignKey('brand.b_id'), nullable=False)  # 品牌id
+    seller_id = db.Column(db.INTEGER, db.ForeignKey('seller.id'), nullable=False)  # 卖家id
+    grade = db.Column(db.INTEGER, nullable=False, default=0)  # 商品评分，默认是0
 
-        id = db.Column(db.Integer, primary_key=True)  # 订单id
-        user_id = db.Column(db.Integer, db.ForeignKey("user.id"), nullable=False, primary_key=True)  # 用户id
-        address_id = db.Column(db.INTEGER, db.ForeignKey('shipping_address.id'), nullable=False,
-                               primary_key=True)  # 地址id
-        status = db.Column(db.INTEGER, nullable=False, default=0)  # 定单状态，0代付款，1待发货，2待收货，3已签收，4已取消
-        payment_method = db.Column(db.INTEGER, nullable=False)  # 付款方式，0支付宝，1银联，2ebay，3微信
+    attrs = db.relationship('ProductSizeColor', backref='products', secondary='product_params')
 
-        products = db.relationship('Product', backref='order_form', secondary='order_product', lazy='dynamic')
-        address = db.relationship('ShippingAddress', backref=db.backref('order_form', uselist=False))
 
-    class Category(db.Model):
-        '''商品种类表'''
-        __tablename__ = "category"
+class OrderForm(BaseModel, db.Model):
+    """订单"""
+    __tablename__ = "order_form"
 
-        c_id = db.Column(db.Integer, primary_key=True)  # 种类id
-        c_name = db.Column(db.String(50), nullable=False)  # 种类名
+    id = db.Column(db.Integer, primary_key=True)  # 订单id
+    user_id = db.Column(db.Integer, db.ForeignKey("user.id"), nullable=False, primary_key=True)  # 用户id
+    address_id = db.Column(db.INTEGER, db.ForeignKey('shipping_address.id'), nullable=False,
+                           primary_key=True)  # 地址id
+    status = db.Column(db.INTEGER, nullable=False, default=0)  # 定单状态，0代付款，1待发货，2待收货，3已签收，4已取消
+    payment_method = db.Column(db.INTEGER, nullable=False)  # 付款方式，0支付宝，1银联，2ebay，3微信
 
-        products = db.relationship('Product', backref='category')
+    products = db.relationship('Product', backref='order_form', secondary='order_product', lazy='dynamic')
+    address = db.relationship('ShippingAddress', backref=db.backref('order_form', uselist=False))
 
-    class Brand(db.Model):
-        '''商品品牌表'''
-        __tablename__ = "brand"
 
-        b_id = db.Column(db.Integer, primary_key=True)  # 品牌id
-        b_name = db.Column(db.String(50), nullable=False)  # 品牌名
+class Category(db.Model):
+    '''商品种类表'''
+    __tablename__ = "category"
 
-        prducts = db.relationship('Product', backref='brand')
+    c_id = db.Column(db.Integer, primary_key=True)  # 种类id
+    c_name = db.Column(db.String(50), nullable=False)  # 种类名
 
-    class Seller(BaseModel, db.Model):
-        """用户"""
-        __tablename__ = "seller"
+    products = db.relationship('Product', backref='category')
 
-        id = db.Column(db.Integer, primary_key=True)  # 卖家编号
-        mobile = db.Column(db.String(50), nullable=False)  # 手机号
-        seller_name = db.Column(db.String(50), unique=False, nullable=False, default=mobile)  # 卖家昵称
-        email = db.Column(db.String(50), nullable=False, default='')  # 邮箱
-        address = db.Column(db.String(100), nullable=True)  # 卖家地址
-        is_seller = db.Column(db.Integer, default=1, nullable=False)  # 是否是卖家
-        password_hash = db.Column(db.Integer, nullable=False, default=mobile)  # 密码
 
-        products = db.relationship('Product', backref='seller')
+class Brand(db.Model):
+    '''商品品牌表'''
+    __tablename__ = "brand"
 
-    class ProductSizeColor(db.Model):
-        '''商品型号颜色表'''
-        __tablename__ = "product_size_color"
+    b_id = db.Column(db.Integer, primary_key=True)  # 品牌id
+    b_name = db.Column(db.String(50), nullable=False)  # 品牌名
 
-        id = db.Column(db.Integer, primary_key=True)  # 商品型号颜色id
-        color_name = db.Column(db.String(20), nullable=False)  # 颜色名
-        size_name = db.Column(db.String(20), nullable=False)  # 型号表
+    prducts = db.relationship('Product', backref='brand')
 
-    class ShopCar(db.Model):
-        '''购物车表'''
-        __tablename__ = "shop_car"
 
-        user_id = db.Column(db.Integer, db.ForeignKey('user.id'), primary_key=True)  # 用户id
-        product_id = db.Column(db.Integer, db.ForeignKey('product.id'), primary_key=True, )  # 商品id
+class Seller(BaseModel, db.Model):
+    """用户"""
+    __tablename__ = "seller"
 
-        user = db.relationship('User', backref=db.backref('shop_car', uselist=False))
-        products = db.relationship("Product", backref='shop_car')
+    id = db.Column(db.Integer, primary_key=True)  # 卖家编号
+    mobile = db.Column(db.String(50), nullable=False)  # 手机号
+    seller_name = db.Column(db.String(50), unique=False, nullable=False, default=mobile)  # 卖家昵称
+    email = db.Column(db.String(50), nullable=False, default='')  # 邮箱
+    address = db.Column(db.String(100), nullable=True)  # 卖家地址
+
+    products = db.relationship('Product', backref='seller')
+
+
+class ProductSizeColor(db.Model):
+    '''商品型号颜色表'''
+    __tablename__ = "product_size_color"
+
+    id = db.Column(db.Integer, primary_key=True)  # 商品型号颜色id
+    color_name = db.Column(db.String(20), nullable=False)  # 颜色名
+    size_name = db.Column(db.String(20), nullable=False)  # 型号表
+
+
+class ShopCar(db.Model):
+    '''购物车表'''
+    __tablename__ = "shop_car"
+
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), primary_key=True)  # 用户id
+    product_id = db.Column(db.Integer, db.ForeignKey('product.id'), primary_key=True, )  # 商品id
+
+    user = db.relationship('User', backref=db.backref('shop_car', uselist=False))
+    products = db.relationship("Product", backref='shop_car')
