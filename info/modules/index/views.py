@@ -1,6 +1,6 @@
 import datetime
 
-from flask import render_template, current_app, request, jsonify, session, g
+from flask import render_template, current_app, request, jsonify, session, g, abort
 
 from info import db
 from info.models import User, Product
@@ -184,10 +184,42 @@ def myAccount():
     return render_template('index/my-account.html', data=data)
 
 
-@index_blu.route('/productDetailsVariable')
+@index_blu.route('/productDetails')
 def productDetailsVariable():
     '''商品详情页'''
-    data = {}
+    # 获取鞋子的id
+    shoe_id = request.args.get('id')
+    if not shoe_id:
+        abort(404)
+    # 从数据库中查询
+    shoes = None
+    try:
+        shoes = Product.query.get(shoe_id)
+    except Exception as e:
+        current_app.logger.error(e)
+        abort(404)
+    if not shoes:
+        abort(404)
+    # 鞋子的尺寸
+    attrs = shoes.attrs
+    product_sc_list = []
+    for attr in attrs:
+        product_sc_list.append(attr.to_dict())
+    print(product_sc_list)
+
+    colors = []
+    sizes = []
+    for product_sc in product_sc_list:
+        if product_sc['color_name'] not in colors:
+            colors.append(product_sc['color_name'])
+        if product_sc['size_name'] not in colors:
+            sizes.append(product_sc['size_name'])
+    data = {
+        "shoes_info": shoes.to_dict(),
+        'product_size_colors': product_sc_list,
+        'colors': colors,
+        'sizes': sizes
+    }
     return render_template('index/product-details-variable.html', data=data)
 
 

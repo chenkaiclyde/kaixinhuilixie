@@ -180,6 +180,14 @@ class ProductSizeColor(db.Model):
     color_name = db.Column(db.String(20), nullable=False)  # 颜色名
     size_name = db.Column(db.String(20), nullable=False)  # 型号表
 
+    def to_dict(self):
+        output_data_dict = {
+            'id': self.id,
+            'color_name': self.color_name,
+            'size_name': self.size_name
+        }
+        return output_data_dict
+
 
 class ShopCar(db.Model):
     '''购物车表'''
