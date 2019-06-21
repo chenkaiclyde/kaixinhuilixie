@@ -1,17 +1,25 @@
 import datetime
 
-from flask import render_template, current_app, request, jsonify, session
+from flask import render_template, current_app, request, jsonify, session, g
 
 from info import db
 from info.models import User
 from info.response_code import RET
+from info.utils.commons import user_login_data
 from . import index_blu
 
 
 @index_blu.route('/')
+@user_login_data
 def index():
     '''首页'''
-    data = {}
+    # 获取登录的用户
+    user = g.user
+
+
+    data = {
+        'user_info':user.to_dict()
+    }
     return render_template('index/index.html', data=data)
 
 
