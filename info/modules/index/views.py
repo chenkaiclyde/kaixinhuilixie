@@ -15,11 +15,13 @@ def index():
     '''首页'''
     # 获取登录的用户
     user = g.user
+    # 给user_info一个默认值
+    user_info = None
     if user:
         user_info = user.to_dict()
 
     data = {
-        'user_info':user_info
+        'user_info': user_info
     }
     return render_template('index/index.html', data=data)
 
