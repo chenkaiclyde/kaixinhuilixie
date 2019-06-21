@@ -83,7 +83,7 @@ class Product(BaseModel, db.Model):
     """商品"""
     __tablename__ = "product"
 
-    id = db.Column(db.Integer, primary_key=True, nullable=False)  # 收件地址id
+    id = db.Column(db.Integer, primary_key=True, nullable=False)  # 商品id
     title = db.Column(db.String(255), nullable=False)  # 商品标题
     price = db.Column(db.INTEGER, nullable=False)  # 商品价格
     describe = db.Column(db.String(255), nullable=True)  # 商品描述
@@ -93,9 +93,35 @@ class Product(BaseModel, db.Model):
     brand_id = db.Column(db.INTEGER, db.ForeignKey('brand.b_id'), nullable=False)  # 品牌id
     seller_id = db.Column(db.INTEGER, db.ForeignKey('seller.id'), nullable=False)  # 卖家id
     grade = db.Column(db.INTEGER, nullable=False, default=0)  # 商品评分，默认是0
-    picture = db.Column(db.String(200))
+    picture = db.Column(db.String(200))  # 商品图片
 
     attrs = db.relationship('ProductSizeColor', backref='products', secondary='product_params')
+
+    def to_dict(self):
+        output_data_dict = {
+            'id': self.id,  # 商品id
+            'title': self.title,  # 商品标题
+            'price': self.price,  # 商品价格
+            'describe': self.describe,  # 商品描述
+            'category_id': self.category_id,  # 商品种类
+            'all_nums': self.all_nums,  # 商品数量
+            'status': self.status,  # 商品状态:0上架中，1下架，2审核中
+            'brand_id': self.brand_id,  # 品牌id
+            'seller_id': self.seller_id,  # 卖家id
+            'grade': self.grade,  # 商品评分，默认是0
+            'picture': self.picture,  # 商品图片
+        }
+        return output_data_dict
+
+    def to_basic_dict(self):
+        output_data_dict = {
+            'id': self.id,  # 商品id
+            'title': self.title,  # 商品标题
+            'price': self.price,  # 商品价格
+            'grade': self.grade,  # 商品评分，默认是0
+            'picture': self.picture,  # 商品图片
+        }
+        return output_data_dict
 
 
 class OrderForm(BaseModel, db.Model):

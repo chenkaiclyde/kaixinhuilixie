@@ -17,6 +17,11 @@ def do_index_class(index):
         return ''
 
 
+def do_product_free(price):
+    '''自定义过滤器，计算商品折扣后的价格'''
+    return price * 0.9
+
+
 def user_login_data(f):
     @functools.wraps(f)
     def wrapper(*args, **kwargs):

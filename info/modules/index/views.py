@@ -3,7 +3,7 @@ import datetime
 from flask import render_template, current_app, request, jsonify, session, g
 
 from info import db
-from info.models import User
+from info.models import User, Product
 from info.response_code import RET
 from info.utils.commons import user_login_data
 from . import index_blu
@@ -19,9 +19,19 @@ def index():
     user_info = None
     if user:
         user_info = user.to_dict()
-
+    # 获取新鞋列表
+    new_shoes_list = []
+    try:
+        new_shoes_list = Product.query.order_by(Product.create_time.desc()).limit(5)
+    except Exception as e:
+        current_app.logger.error(e)
+    # 把新鞋转换成字典放入列表
+    new_shoes_dict_list = []
+    for shoes in new_shoes_list:
+        new_shoes_dict_list.append(shoes.to_basic_dict())
     data = {
-        'user_info': user_info
+        'user_info': user_info,
+        'new_shoes_dict_list': new_shoes_dict_list,
     }
     return render_template('index/index.html', data=data)
 

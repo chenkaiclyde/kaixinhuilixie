@@ -16,7 +16,7 @@ from config import config
 db = SQLAlchemy()
 # redis的操作对象
 redis_store = None
-from info.utils.commons import do_index_class
+from info.utils.commons import do_index_class, do_product_free
 
 
 def setup_log(config_name):
@@ -80,6 +80,7 @@ def create_app(config_name):
 
     # 注册自定义过滤器
     app.add_template_filter(do_index_class, 'index_class')
+    app.add_template_filter(do_product_free, 'product_free')
 
     from info.modules.index import index_blu
 
