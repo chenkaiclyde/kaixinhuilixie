@@ -519,10 +519,10 @@
                             <h4>Sign In</h4>
                             <form action="#" method="post">
                                 <div class="single-input-item">
-                                    <input type="email" placeholder="Email or Username" required/>
+                                    <input type="email" id="loginuser" placeholder="Email or Username" required/>
                                 </div>
                                 <div class="single-input-item">
-                                    <input type="password" placeholder="Enter your Password" required/>
+                                    <input type="password" id="loginpwd" placeholder="Enter your Password" required/>
                                 </div>
                                 <div class="single-input-item">
                                     <div class="login-reg-form-meta d-flex align-items-center justify-content-between">
@@ -810,8 +810,7 @@
                 success: function (data) {
                     if (data.errno == "0") {
                         //  登录成功  刷新页面
-                        $("user").html(data.user)
-                        window.location.href("/")
+                        window.location.href = '/'
                     } else {
                         alert(data.errmsg)
                     }

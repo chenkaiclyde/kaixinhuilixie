@@ -73,15 +73,12 @@ def login():
     email = params_dict.get("email")
     password = params_dict.get("password")
 
-    print(request.json)
-    print(email)
-    print(password)
     if not all([email, password]):
         return jsonify(errno=RET.PARAMERR, errmsg="参数不足")
 
     try:
         # 陈老板 快写查询
-        user = ...
+        user = User.query.filter(User.email == email).first()
     except Exception as e:
         current_app.logger.error(e)
         return jsonify(errno=RET.DBERR, errmsg="数据查询失败")
@@ -95,9 +92,10 @@ def login():
         return jsonify(errno=RET.PARAMERR, errmsg="密码错误")
 
     # 存放用户登录的状态
-    session["user"] = username
+    session["user_id"] = user.id
+    session['username'] = user.username
 
-    return jsonify(errno=RET.OK, errmsg="登录成功", user=username)
+    return jsonify(errno=RET.OK, errmsg="登录成功")
 
 
 @index_blu.route('/register', methods=["GET", "POST"])
