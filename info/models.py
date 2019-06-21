@@ -164,11 +164,3 @@ class ShopCar(db.Model):
 
     user = db.relationship('User', backref=db.backref('shop_car', uselist=False))
     products = db.relationship("Product", backref='shop_car')
-
-if __name__ == '__main__':
-    p1 = Product(title='QUINCKIIN MENS SHOES',price=599,describe='',category_id=3,all_nums=20,status=0,brand_id=1,seller_id=1,grade=5,picture='http://psxb4bmry.bkt.clouddn.com/product-1.jpg')
-    p2 = Product(title='NEW WOMENS HIGH HILLS',price=360,describe='',category_id=5,all_nums=30,status=0,brand_id=7,seller_id=2,grade=5,picture='http://psxb4bmry.bkt.clouddn.com/product-2.jpg')
-    p3 = Product(title='LEATHER MENS SLIPPERS',price=300,describe='',category_id=4,all_nums=20,status=0,brand_id=3,seller_id=1,grade=5,picture='http://psxb4bmry.bkt.clouddn.com/product-3.jpg')
-    p4 = Product(title='PEXPO WOMENS SHOES',price=499,describe='',category_id=3,all_nums=50,status=0,brand_id=1,seller_id=2,grade=5,picture='http://psxb4bmry.bkt.clouddn.com/product-4.jpg')
-    p5 = Product(title='PRIMITIVE MENS SHOES',price=330,describe='',category_id=2,all_nums=46,status=0,brand_id=1,seller_id=1,grade=5,picture='http://psxb4bmry.bkt.clouddn.com/product-4.jpg')
-
