@@ -206,7 +206,7 @@ def productDetailsVariable():
     for attr in attrs:
         product_sc_list.append(attr.to_dict())
     print(product_sc_list)
-
+    # 把颜色和尺寸分别整理到两个列表中
     colors = []
     sizes = []
     for product_sc in product_sc_list:
