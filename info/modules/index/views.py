@@ -1,9 +1,9 @@
 import datetime
 
-from flask import render_template, current_app, request, jsonify, session, g, abort
+from flask import render_template, current_app, request, jsonify, session, g, abort, redirect, url_for
 
 from info import db
-from info.models import User, Product
+from info.models import User, Product, ShopCar
 from info.response_code import RET
 from info.utils.commons import user_login_data
 from . import index_blu
@@ -235,3 +235,39 @@ def wishlist():
     '''意愿清单'''
     data = {}
     return render_template('index/wishlist.html', data=data)
+
+
+@index_blu.route('/add_car', methods=['POST', 'GET'])
+@user_login_data
+def add_car():
+    user = g.user
+    if not user:
+        return jsonify(errno=RET.SESSIONERR, errmsg='请先登录')
+    # 获取鞋子的id
+    shoes_id = request.json.get('shoes_id')
+    if not shoes_id:
+        return jsonify(errno=RET.PARAMERR, errmsg='参数错误')
+    # 获取鞋子对象
+    try:
+        shoes = Product.query.get(shoes_id)
+    except Exception as e:
+        current_app.logger.error(e)
+        return jsonify(errno=RET.DBERR, errmsg='数据库查询错误')
+    # 判断鞋子对象是否存在
+    if not shoes:
+        return jsonify(errno=RET.NODATA, errmsg='数据不存在')
+
+    # 添加鞋子到用户购物车
+    shopcar = ShopCar()
+    shopcar.user_id = user.id
+    shopcar.product_id = shoes.id
+
+    # 提交数据
+    try:
+        db.session.add(shopcar)
+        db.session.commit()
+    except Exception as e:
+        current_app.logger.error(e)
+        db.session.rollback()
+        return jsonify(errno=RET.DBERR, errmsg='数据查询错误')
+    return jsonify(errno=RET.OK, errmsg='添加成功')
