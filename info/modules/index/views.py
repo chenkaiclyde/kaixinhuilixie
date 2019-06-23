@@ -45,7 +45,7 @@ def index():
     if len(collect_shoes) > 0:
         for c_shoes in collect_shoes:
             # 判断鞋子数量是否大于0
-            if c_shoes.nums > 0:
+            if c_shoes.nums > 0 and c_shoes.is_remove == 0:
                 # 向商品信息添加一个属性all_nums，值为数据库里存放的shop_car中的nums
                 shoes_dict = Product.query.get(c_shoes.product_id).to_head_collect_dict()
                 shoes_dict['add_nums'] = c_shoes.nums
@@ -97,8 +97,8 @@ def cart():
     c_shoes_dict_list = []
     if len(collect_shoes) > 0:
         for c_shoes in collect_shoes:
-            # 判断鞋子数量是否大于0
-            if c_shoes.nums > 0:
+            # 判断鞋子数量是否大于0,是否被删除
+            if c_shoes.nums > 0 and c_shoes.is_remove == 0:
                 # 向商品信息添加一个属性all_nums，值为数据库里存放的shop_car中的nums
                 shoes_dict = Product.query.get(c_shoes.product_id).to_head_collect_dict()
                 shoes_dict['add_nums'] = c_shoes.nums
@@ -325,11 +325,22 @@ def add_car():
     if not shoes:
         return jsonify(errno=RET.NODATA, errmsg='数据不存在')
 
+    # 从数据库中查询用户之前是否添加过该商品
+    try:
+        shopcar = ShopCar.query.filter(ShopCar.user_id == user.id, ShopCar.product_id == shoes_id).first()
+    except Exception as e:
+        current_app.logger.error(e)
+        return jsonify(errno=RET.DBERR, errmsg='数据查询错误')
+    # 如果查询到之前的添加过得数据把is_remove改为0
+    if shopcar:
+        shopcar.is_remove = 0
+        return jsonify(errno=RET.OK, errmsg='添加成功')
     # 添加鞋子到用户购物车
     shopcar = ShopCar()
     shopcar.user_id = user.id
     shopcar.product_id = shoes.id
     shopcar.nums = add_nums
+    shopcar.is_remove = 0
 
     # 提交数据
     try:
@@ -367,7 +378,19 @@ def car_rmproduct():
         return jsonify(errno=RET.PARAMERR, errmsg='参数错误')
     # 获取购物车中的对象
     try:
-        shop_car_p = ShopCar.query.filter(ShopCar.user_id == user_id, ShopCar.product_id == shoes_id).first
+        shop_car_p = ShopCar.query.filter(ShopCar.user_id == user_id, ShopCar.product_id == shoes_id).first()
     except Exception as e:
         current_app.logger.error(e)
         return jsonify(errno=RET.DBERR, errmsg='数据查询错误')
+    # 如果查询不到
+    if not shop_car_p:
+        return jsonify(errno=RET.NODATA, errmsg='没有数据')
+    # 把is_remove改为1
+    try:
+        shop_car_p.is_remove = 1
+        db.session.commit()
+    except Exception as e:
+        current_app.logger.error(e)
+        db.session.rollback()
+        return jsonify(errno=RET.DBERR, errmsg='删除失败')
+    return jsonify(errno=RET.OK, errmsg='删除成功')
