@@ -126,10 +126,41 @@ def cart():
     return render_template('index/cart.html', data=data)
 
 
-@index_blu.route('/checkout')
+@index_blu.route('/checkout',methods=['POST','GET'])
+@user_login_data
 def checkout():
     '''结账页面'''
-    data = {}
+    user = g.user
+    if not user:
+        return redirect('/')
+    user_info = user.to_dict()
+    # 查询用户购物车里所有的商品
+    try:
+        collect_shoes = user.shop_car
+    except Exception as e:
+        traceback.print_exc()
+        current_app.logger.error(e)
+    # 总价
+    total_price = 0
+    # 将购物车商品放入一个列表
+    c_shoes_dict_list = []
+    if len(collect_shoes) > 0:
+        for c_shoes in collect_shoes:
+            # 判断鞋子数量是否大于0,是否被删除
+            if c_shoes.nums > 0 and c_shoes.is_remove == 0:
+                # 向商品信息添加一个属性all_nums，值为数据库里存放的shop_car中的nums
+                shoes_dict = Product.query.get(c_shoes.product_id).to_head_collect_dict()
+                shoes_dict['add_nums'] = c_shoes.nums
+                c_shoes_dict_list.append(shoes_dict)
+                # 总价
+                total_price += shoes_dict['price'] * shoes_dict['add_nums']
+                # 单个商品总价
+                shoes_dict['shoes_total_price'] = shoes_dict['price'] * shoes_dict['add_nums']
+    data = {
+        'user_info': user_info,
+        'c_shoes_dict_list': c_shoes_dict_list,
+        'total_price': total_price,
+    }
     return render_template('index/checkout.html', data=data)
 
 
