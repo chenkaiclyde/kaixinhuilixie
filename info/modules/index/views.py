@@ -50,7 +50,7 @@ def index():
                 shoes_dict = Product.query.get(c_shoes.product_id).to_head_collect_dict()
                 shoes_dict['add_nums'] = c_shoes.nums
                 c_shoes_dict_list.append(shoes_dict)
-                total_price += shoes_dict['price']
+                total_price += shoes_dict['price'] * shoes_dict['add_nums']
     data = {
         'user_info': user_info,
         'new_shoes_dict_list': new_shoes_dict_list,
@@ -104,7 +104,7 @@ def cart():
                 shoes_dict['add_nums'] = c_shoes.nums
                 c_shoes_dict_list.append(shoes_dict)
                 # 总价
-                total_price += shoes_dict['price']
+                total_price += shoes_dict['price']*shoes_dict['add_nums']
                 # 单个商品总价
                 shoes_dict['shoes_total_price'] = shoes_dict['price'] * shoes_dict['add_nums']
     data = {
@@ -321,19 +321,27 @@ def add_car():
     except Exception as e:
         current_app.logger.error(e)
         return jsonify(errno=RET.DBERR, errmsg='数据库查询错误')
+
     # 判断鞋子对象是否存在
     if not shoes:
         return jsonify(errno=RET.NODATA, errmsg='数据不存在')
-
     # 从数据库中查询用户之前是否添加过该商品
+    shopcar = None
     try:
         shopcar = ShopCar.query.filter(ShopCar.user_id == user.id, ShopCar.product_id == shoes_id).first()
     except Exception as e:
         current_app.logger.error(e)
         return jsonify(errno=RET.DBERR, errmsg='数据查询错误')
     # 如果查询到之前的添加过得数据把is_remove改为0
+    print(shopcar)
     if shopcar:
         shopcar.is_remove = 0
+        shopcar.nums = add_nums
+        try:
+            db.session.commit()
+        except Exception as e:
+            current_app.logger.error(e)
+            return jsonify(errno=RET.DBERR, errmsg='添加失败')
         return jsonify(errno=RET.OK, errmsg='添加成功')
     # 添加鞋子到用户购物车
     shopcar = ShopCar()
