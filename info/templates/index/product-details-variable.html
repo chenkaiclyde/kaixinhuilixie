@@ -558,7 +558,7 @@
 {% endblock %}
 
 {% block js_block %}
-
+    <script>
         $(function () {
             $('#add_car').click(function (e) {
                 e.preventDefault();
@@ -567,7 +567,7 @@
                 var params = {
                     'shoes_id': shoes_id,
                     'add_nums': add_nums
-                    }
+                }
                 $.ajax({
                     url: "/add_car",
                     type: "post",
@@ -580,7 +580,7 @@
 
                         } else if (data.errno == '4101') {
                             alert(data.errmsg)
-                            window.location.href='/loginRegister'
+                            window.location.href = '/loginRegister'
                         } else {
                             alert(data.errmsg)
                         }
@@ -592,5 +592,5 @@
             })
 
         })
-
+    </script>
 {% endblock %}
