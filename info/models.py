@@ -123,6 +123,15 @@ class Product(BaseModel, db.Model):
         }
         return output_data_dict
 
+    def to_head_collect_dict(self):
+        output_data_dict = {
+            'id': self.id,  # 商品id
+            'title': self.title,  # 商品标题
+            'price': self.price,  # 商品价格
+            'picture': self.picture,  # 商品图片
+        }
+        return output_data_dict
+
 
 class OrderForm(BaseModel, db.Model):
     """订单"""
@@ -195,7 +204,7 @@ class ShopCar(db.Model):
 
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), primary_key=True)  # 用户id
     product_id = db.Column(db.Integer, db.ForeignKey('product.id'), primary_key=True)  # 商品id
-    nums = db.Column(db.Integer,default=1,nullable=False)
+    nums = db.Column(db.Integer, default=1, nullable=False)
 
     user = db.relationship('User', backref='shop_car')
     products = db.relationship("Product", backref='shop_car')

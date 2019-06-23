@@ -84,58 +84,23 @@
                                 </tr>
                                 </thead>
                                 <tbody>
-                                <tr>
-                                    <td class="pro-thumbnail"><a href="#"><img class="img-fluid"
-                                                                               src="../../static/index/assets/img/product/product-1.jpg"
-                                                                               alt="Product"/></a></td>
-                                    <td class="pro-title"><a href="#">PRIMITIVE MENS SHOES</a></td>
-                                    <td class="pro-price"><span>$295.00</span></td>
-                                    <td class="pro-quantity">
-                                        <div class="pro-qty"><input type="text" value="1"></div>
-                                    </td>
-                                    <td class="pro-subtotal"><span>$295.00</span></td>
-                                    <td class="pro-remove"><a href="#"><i class="fa fa-trash-o"></i></a></td>
-                                </tr>
-                                <tr>
-                                    <td class="pro-thumbnail"><a href="#"><img class="img-fluid"
-                                                                               src="../../static/index/assets/img/product/product-2.jpg"
-                                                                               alt="Product"/></a></td>
-                                    <td class="pro-title"><a href="#">LEATHER MENS SLIPPERS</a></td>
-                                    <td class="pro-price"><span>$275.00</span></td>
-                                    <td class="pro-quantity">
-                                        <div class="pro-qty"><input type="text" value="2"></div>
-                                    </td>
-                                    <td class="pro-subtotal"><span>$550.00</span></td>
-                                    <td class="pro-remove"><a href="#"><i class="fa fa-trash-o"></i></a></td>
-                                </tr>
-                                <tr>
-                                    <td class="pro-thumbnail"><a href="#"><img class="img-fluid"
-                                                                               src="../../static/index/assets/img/product/product-3.jpg"
-                                                                               alt="Product"/></a></td>
-                                    <td class="pro-title"><a href="#">REXPO WOMENS SHOES</a></td>
-                                    <td class="pro-price"><span>$295.00</span></td>
-                                    <td class="pro-quantity">
-                                        <div class="pro-qty">
-                                            <input type="text" value="1"/>
-                                        </div>
-                                    </td>
-                                    <td class="pro-subtotal"><span>$295.00</span></td>
-                                    <td class="pro-remove"><a href="#"><i class="fa fa-trash-o"></i></a></td>
-                                </tr>
-                                <tr>
-                                    <td class="pro-thumbnail"><a href="#"><img class="img-fluid"
-                                                                               src="../../static/index/assets/img/product/product-4.jpg"
-                                                                               alt="Product"/></a></td>
-                                    <td class="pro-title"><a href="#">QUICKIIN MENS SHOES</a></td>
-                                    <td class="pro-price"><span>$110.00</span></td>
-                                    <td class="pro-quantity">
-                                        <div class="pro-qty">
-                                            <input type="text" value="3"/>
-                                        </div>
-                                    </td>
-                                    <td class="pro-subtotal"><span>$110.00</span></td>
-                                    <td class="pro-remove"><a href="#"><i class="fa fa-trash-o"></i></a></td>
-                                </tr>
+                                {% for shoes in data.c_shoes_dict_list %}
+                                    <tr>
+                                        <td class="pro-thumbnail"><a href="/productDetails?=id{{ shoes.id }}"><img
+                                                class="img-fluid"
+                                                alt="Product" src="{{ shoes.picture }}"/></a></td>
+                                        <td class="pro-title"><a
+                                                href="/productDetails?id={{ shoes.id }}">{{ shoes.title }}</a></td>
+                                        <td class="pro-price"><span>￥{{ shoes.price }}</span></td>
+                                        <td class="pro-quantity">
+                                            <div class="pro-qty"><input type="text" value="{{ shoes.add_nums }}"></div>
+                                        </td>
+                                        <td class="pro-subtotal"><span>￥{{ shoes.shoes_total_price }}</span></td>
+                                        <td class="pro-remove"><a href="/car_rmproduct?id={{ shoes.id }}"
+                                                                  id="car_rmproduct"><i
+                                                class="fa fa-trash-o"></i></a></td>
+                                    </tr>
+                                {% endfor %}
                                 </tbody>
                             </table>
                         </div>
@@ -161,17 +126,9 @@
                                 <h6>Cart Totals</h6>
                                 <div class="table-responsive">
                                     <table class="table">
-                                        <tr>
-                                            <td>Sub Total</td>
-                                            <td>$230</td>
-                                        </tr>
-                                        <tr>
-                                            <td>Shipping</td>
-                                            <td>$70</td>
-                                        </tr>
                                         <tr class="total">
                                             <td>Total</td>
-                                            <td class="total-amount">$300</td>
+                                            <td class="total-amount">￥{{ data.total_price }}</td>
                                         </tr>
                                     </table>
                                 </div>
@@ -187,6 +144,6 @@
 {% endblock %}
 
 
-
 {% block view_model_block %}
 {% endblock %}
+

@@ -144,7 +144,7 @@
                                     <div class="quantity-cart-box d-flex align-items-center">
                                         <h6 class="option-title">qty:</h6>
                                         <div class="quantity">
-                                            <div class="pro-qty"><input type="text" value="1"></div>
+                                            <div class="pro-qty"><input type="text" value="1" id="add_nums"></div>
                                         </div>
                                         <div class="action_link">
                                             <a class="btn btn-cart2" href="#" id='add_car'
@@ -563,7 +563,11 @@
             $('#add_car').click(function (e) {
                 e.preventDefault();
                 var shoes_id = $(this).attr('shoes-id')
-                var params = {'shoes_id': shoes_id}
+                var add_nums = $('#add_nums').val()
+                var params = {
+                    'shoes_id': shoes_id,
+                    'add_nums': add_nums
+                    }
                 $.ajax({
                     url: "/add_car",
                     type: "post",

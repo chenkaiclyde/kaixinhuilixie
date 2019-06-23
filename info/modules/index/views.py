@@ -31,29 +31,31 @@ def index():
     for shoes in new_shoes_list:
         new_shoes_dict_list.append(shoes.to_basic_dict())
     # 用户添加到购物车的鞋子
-    collect_shoes = None
+    collect_shoes = []
     # 查询用户购物车里所有的商品
     try:
         collect_shoes = user.shop_car
     except Exception as e:
         traceback.print_exc()
         current_app.logger.error(e)
-    print('collect_shoes')
-    print(collect_shoes)
+    # 总价
+    total_price = 0
     # 将购物车商品放入一个列表
-    c_shoes_list = []
     c_shoes_dict_list = []
     if len(collect_shoes) > 0:
         for c_shoes in collect_shoes:
-            c_shoes_list.append(Product.query.get(c_shoes.product_id))
-    print(c_shoes_list)
-    # 把购物车商品的对象信息对应的字典返回给浏览器
-    if len(c_shoes_list)>0:
-        for c_p in c_shoes_list:
-            c_shoes_dict_list.append(c_p.to)
+            # 判断鞋子数量是否大于0
+            if c_shoes.nums > 0:
+                # 向商品信息添加一个属性all_nums，值为数据库里存放的shop_car中的nums
+                shoes_dict = Product.query.get(c_shoes.product_id).to_head_collect_dict()
+                shoes_dict['add_nums'] = c_shoes.nums
+                c_shoes_dict_list.append(shoes_dict)
+                total_price += shoes_dict['price']
     data = {
         'user_info': user_info,
         'new_shoes_dict_list': new_shoes_dict_list,
+        'c_shoes_dict_list': c_shoes_dict_list,
+        'total_price': total_price,
     }
     return render_template('index/index.html', data=data)
 
@@ -73,9 +75,43 @@ def blogDetails():
 
 
 @index_blu.route('/cart')
+@user_login_data
 def cart():
     '''购物车'''
-    data = {}
+    # 获取登录的用户
+    user = g.user
+    if not user:
+        return redirect(url_for(loginRegister))
+    user_info = user.to_dict()
+    # 用户添加到购物车的鞋子
+    collect_shoes = None
+    # 查询用户购物车里所有的商品
+    try:
+        collect_shoes = user.shop_car
+    except Exception as e:
+        traceback.print_exc()
+        current_app.logger.error(e)
+    # 总价
+    total_price = 0
+    # 将购物车商品放入一个列表
+    c_shoes_dict_list = []
+    if len(collect_shoes) > 0:
+        for c_shoes in collect_shoes:
+            # 判断鞋子数量是否大于0
+            if c_shoes.nums > 0:
+                # 向商品信息添加一个属性all_nums，值为数据库里存放的shop_car中的nums
+                shoes_dict = Product.query.get(c_shoes.product_id).to_head_collect_dict()
+                shoes_dict['add_nums'] = c_shoes.nums
+                c_shoes_dict_list.append(shoes_dict)
+                # 总价
+                total_price += shoes_dict['price']
+                # 单个商品总价
+                shoes_dict['shoes_total_price'] = shoes_dict['price'] * shoes_dict['add_nums']
+    data = {
+        'user_info': user_info,
+        'c_shoes_dict_list': c_shoes_dict_list,
+        'total_price': total_price,
+    }
     return render_template('index/cart.html', data=data)
 
 
@@ -235,7 +271,6 @@ def productDetailsVariable():
     product_sc_list = []
     for attr in attrs:
         product_sc_list.append(attr.to_dict())
-    print(product_sc_list)
     # 把颜色和尺寸分别整理到两个列表中
     colors = []
     sizes = []
@@ -276,7 +311,8 @@ def add_car():
         return jsonify(errno=RET.SESSIONERR, errmsg='请先登录')
     # 获取鞋子的id
     shoes_id = request.json.get('shoes_id')
-    if not shoes_id:
+    add_nums = request.json.get('add_nums')
+    if not all([shoes_id, add_nums]):
         return jsonify(errno=RET.PARAMERR, errmsg='参数错误')
     # 获取鞋子对象
     try:
@@ -292,6 +328,7 @@ def add_car():
     shopcar = ShopCar()
     shopcar.user_id = user.id
     shopcar.product_id = shoes.id
+    shopcar.nums = add_nums
 
     # 提交数据
     try:
