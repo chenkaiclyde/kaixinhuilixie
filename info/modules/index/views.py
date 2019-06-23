@@ -51,11 +51,22 @@ def index():
                 shoes_dict['add_nums'] = c_shoes.nums
                 c_shoes_dict_list.append(shoes_dict)
                 total_price += shoes_dict['price'] * shoes_dict['add_nums']
+    # 查找最新发布的十双鞋
+    ten_new_shoes = []
+    try:
+        ten_new_shoes = Product.query.order_by(Product.create_time.desc()).limit(10).all()
+    except Exception as e:
+        current_app.logger.error(e)
+    ten_new_shoes_dict_list = []
+    if len(ten_new_shoes) > 0:
+        for ten_new_shoe in ten_new_shoes:
+            ten_new_shoes_dict_list.append(ten_new_shoe.to_basic_dict())
     data = {
         'user_info': user_info,
         'new_shoes_dict_list': new_shoes_dict_list,
         'c_shoes_dict_list': c_shoes_dict_list,
         'total_price': total_price,
+        'ten_new_shoes_dict_list': ten_new_shoes_dict_list,
     }
     return render_template('index/index.html', data=data)
 
@@ -280,6 +291,7 @@ def productDetailsVariable():
         if product_sc['size_name'] not in colors:
             sizes.append(product_sc['size_name'])
     # 查询用户购物车里所有的商品
+    collect_shoes = []
     try:
         collect_shoes = user.shop_car
     except Exception as e:
