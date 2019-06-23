@@ -93,7 +93,9 @@
                                                 href="/productDetails?id={{ shoes.id }}">{{ shoes.title }}</a></td>
                                         <td class="pro-price"><span>￥{{ shoes.price }}</span></td>
                                         <td class="pro-quantity">
-                                            <div class="pro-qty"><input type="text" value="{{ shoes.add_nums }}"></div>
+                                            <div class="pro-qty"><input type="text" class='shoes_nums'
+                                                                        shoes-id='{{ shoes.id }}'
+                                                                        value="{{ shoes.add_nums }}"></div>
                                         </td>
                                         <td class="pro-subtotal"><span>￥{{ shoes.shoes_total_price }}</span></td>
                                         <td class="pro-remove"><a href="#" shoes-id="{{ shoes.id }}"
@@ -169,8 +171,30 @@
         })
         $('#update_cart').click(function (e) {
             e.preventDefault()
+            var params = {}
+            $('.shoes_nums').each(function () {
+                params[$(this).attr('shoes-id')] = $(this).val()
+            })
+
+            $.ajax({
+                url: "/update_cart",
+                type: "post",
+                data: JSON.stringify(params),
+                contentType: "application/json",
+                dataType: 'json',
+                success: function (data) {
+                    if (data.errno == "0") {
+                        alert('刷新成功')
+                        window.location.reload()
+                    } else {
+                        alert(data.errmsg)
+                    }
+                },
+                error: function (e) {
+                    alert('网络不好，刷新失败')
+                }
+            })
+
         })
     </script>
-
 {% endblock %}
-

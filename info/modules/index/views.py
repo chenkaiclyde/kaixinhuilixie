@@ -104,7 +104,7 @@ def cart():
                 shoes_dict['add_nums'] = c_shoes.nums
                 c_shoes_dict_list.append(shoes_dict)
                 # 总价
-                total_price += shoes_dict['price']*shoes_dict['add_nums']
+                total_price += shoes_dict['price'] * shoes_dict['add_nums']
                 # 单个商品总价
                 shoes_dict['shoes_total_price'] = shoes_dict['price'] * shoes_dict['add_nums']
     data = {
@@ -279,12 +279,31 @@ def productDetailsVariable():
             colors.append(product_sc['color_name'])
         if product_sc['size_name'] not in colors:
             sizes.append(product_sc['size_name'])
+    # 查询用户购物车里所有的商品
+    try:
+        collect_shoes = user.shop_car
+    except Exception as e:
+        traceback.print_exc()
+        current_app.logger.error(e)
+    # 将购物车商品放入一个列表
+    c_shoes_dict_list = []
+    if len(collect_shoes) > 0:
+        for c_shoes in collect_shoes:
+            # 判断鞋子数量是否大于0,是否被删除
+            if c_shoes.nums > 0 and c_shoes.is_remove == 0:
+                # 向商品信息添加一个属性all_nums，值为数据库里存放的shop_car中的nums
+                shoes_dict = Product.query.get(c_shoes.product_id).to_head_collect_dict()
+                shoes_dict['add_nums'] = c_shoes.nums
+                c_shoes_dict_list.append(shoes_dict)
+                # 单个商品总价
+                shoes_dict['shoes_total_price'] = shoes_dict['price'] * shoes_dict['add_nums']
     data = {
         'user_info': user_info,
         "shoes_info": shoes.to_dict(),
         'product_size_colors': product_sc_list,
         'colors': colors,
-        'sizes': sizes
+        'sizes': sizes,
+        'c_shoes_dict_list': c_shoes_dict_list,
     }
     return render_template('index/product-details-variable.html', data=data)
 
@@ -402,3 +421,36 @@ def car_rmproduct():
         db.session.rollback()
         return jsonify(errno=RET.DBERR, errmsg='删除失败')
     return jsonify(errno=RET.OK, errmsg='删除成功')
+
+
+@index_blu.route('/update_cart', methods=['POST'])
+@user_login_data
+def update_cart():
+    '''刷新购物车'''
+    user = g.user
+    if not user:
+        return jsonify(errno=RET.SESSIONERR, errmsg='用户未登录')
+    # 获取鞋子的id和数量
+    params_dict = request.json
+    if not params_dict:
+        return jsonify(errno=RET.PARAMERR, errmsg='参数错误')
+
+    # 遍历用户对应的购物车,更改商品数量
+    for shoes_id, shoes_num in params_dict.items():
+        try:
+            # 用用户id和商品id去数据库查询对应的数据
+            shop_car = ShopCar.query.filter(ShopCar.user_id == user.id, ShopCar.product_id == shoes_id).first()
+            if not shop_car:
+                return jsonify(errno=RET.NODATA, errmsg='数据不存在')
+            shop_car.nums = shoes_num
+        except Exception as e:
+            current_app.logger.error(e)
+            return jsonify(errno=RET.DBERR, errmsg='数据查询错误')
+    # 提交数据
+    try:
+        db.session.commit()
+    except Exception as e:
+        current_app.logger.error(e)
+        db.session.rollback()
+        return jsonify(errno=RET.DBERR, errmsg='刷新失败')
+    return jsonify(errno=RET.OK, errmsg='刷新成功')
