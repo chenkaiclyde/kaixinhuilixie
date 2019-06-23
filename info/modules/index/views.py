@@ -4,7 +4,7 @@ import traceback
 from flask import render_template, current_app, request, jsonify, session, g, abort, redirect, url_for
 
 from info import db
-from info.models import User, Product, ShopCar
+from info.models import User, Product, ShopCar, ShippingAddress, OrderForm
 from info.response_code import RET
 from info.utils.commons import user_login_data
 from . import index_blu
@@ -130,38 +130,98 @@ def cart():
 @user_login_data
 def checkout():
     '''结账页面'''
+    if request.method == 'GET':
+        user = g.user
+        if not user:
+            return redirect('/')
+        user_info = user.to_dict()
+        # 查询用户购物车里所有的商品
+        collect_shoes=[]
+        try:
+            collect_shoes = user.shop_car
+        except Exception as e:
+            traceback.print_exc()
+            current_app.logger.error(e)
+        # 总价
+        total_price = 0
+        # 将购物车商品放入一个列表
+        c_shoes_dict_list = []
+        if len(collect_shoes) > 0:
+            for c_shoes in collect_shoes:
+                # 判断鞋子数量是否大于0,是否被删除
+                if c_shoes.nums > 0 and c_shoes.is_remove == 0:
+                    # 向商品信息添加一个属性all_nums，值为数据库里存放的shop_car中的nums
+                    shoes_dict = Product.query.get(c_shoes.product_id).to_head_collect_dict()
+                    shoes_dict['add_nums'] = c_shoes.nums
+                    c_shoes_dict_list.append(shoes_dict)
+                    # 总价
+                    total_price += shoes_dict['price'] * shoes_dict['add_nums']
+                    # 单个商品总价
+                    shoes_dict['shoes_total_price'] = shoes_dict['price'] * shoes_dict['add_nums']
+        data = {
+            'user_info': user_info,
+            'c_shoes_dict_list': c_shoes_dict_list,
+            'total_price': total_price,
+        }
+        return render_template('index/checkout.html', data=data)
+    # 获取用户提交的数据
+    params_dict = request.json
+    username = params_dict.get('username')
+    email = params_dict.get('email')
+    street_address = params_dict.get('street_address')
+    town = params_dict.get('town')
+    state = params_dict.get('state')
+    phone = params_dict.get('phone')
+    if not all([username,email,street_address,town,state,phone]):
+        return jsonify(errno=RET.PARAMERR, errmsg="参数不足")
     user = g.user
     if not user:
-        return redirect('/')
-    user_info = user.to_dict()
-    # 查询用户购物车里所有的商品
+        return jsonify(errno=RET.SESSIONERR, errmsg="用户未登录")
+    # 创建地址对象
+
+    s_addr = ShippingAddress()
+    s_addr.user_id = user.id
+    s_addr.address = state+'%%'+town+'%%'+street_address
+    s_addr.nickname = username
+    s_addr.phoneNumber = phone
+    try:
+        db.session.add(s_addr)
+        db.session.commit()
+    except Exception as e:
+        current_app.logger.error(e)
+        db.session.rollback()
+        return jsonify(errno=RET.SESSIONERR, errmsg="订单创建失败")
+    # 创建订单对象
+    order_form = OrderForm()
+    order_form.user_id = user.id
+
+    order_form.status = -1
+    order_form.payment_method = -1
+    order_form.address_id = s_addr.id
+    # 清空用户的购物车
+
     try:
         collect_shoes = user.shop_car
     except Exception as e:
         traceback.print_exc()
         current_app.logger.error(e)
-    # 总价
-    total_price = 0
-    # 将购物车商品放入一个列表
-    c_shoes_dict_list = []
-    if len(collect_shoes) > 0:
-        for c_shoes in collect_shoes:
-            # 判断鞋子数量是否大于0,是否被删除
-            if c_shoes.nums > 0 and c_shoes.is_remove == 0:
-                # 向商品信息添加一个属性all_nums，值为数据库里存放的shop_car中的nums
-                shoes_dict = Product.query.get(c_shoes.product_id).to_head_collect_dict()
-                shoes_dict['add_nums'] = c_shoes.nums
-                c_shoes_dict_list.append(shoes_dict)
-                # 总价
-                total_price += shoes_dict['price'] * shoes_dict['add_nums']
-                # 单个商品总价
-                shoes_dict['shoes_total_price'] = shoes_dict['price'] * shoes_dict['add_nums']
-    data = {
-        'user_info': user_info,
-        'c_shoes_dict_list': c_shoes_dict_list,
-        'total_price': total_price,
-    }
-    return render_template('index/checkout.html', data=data)
+        return jsonify(errno=RET.DBERR, errmsg="数据查询失败")
+    if len(collect_shoes) == 0:
+        return jsonify(errno=RET.NODATA, errmsg="没有数据")
+    for c_shoes in collect_shoes:
+        # 判断鞋子数量是否大于0,是否被删除
+        if c_shoes.nums > 0 and c_shoes.is_remove == 0:
+            # 向商品信息添加一个属性all_nums，值为数据库里存放的shop_car中的nums
+            c_shoes.is_remove = -1
+
+    try:
+        db.session.add(order_form)
+        db.session.commit()
+    except Exception as e:
+        current_app.logger.error(e)
+        db.session.rollback()
+        return jsonify(errno=RET.SESSIONERR, errmsg="订单创建失败")
+    return jsonify(errno=RET.OK, errmsg="订单创建成功")
 
 
 # 陈老板辛苦了,小弟与你同在

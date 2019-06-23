@@ -137,12 +137,12 @@ class OrderForm(BaseModel, db.Model):
     """订单"""
     __tablename__ = "order_form"
 
-    id = db.Column(db.Integer, primary_key=True)  # 订单id
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True, nullable=True)  # 订单id
     user_id = db.Column(db.Integer, db.ForeignKey("user.id"), nullable=False, primary_key=True)  # 用户id
     address_id = db.Column(db.INTEGER, db.ForeignKey('shipping_address.id'), nullable=False,
                            primary_key=True)  # 地址id
-    status = db.Column(db.INTEGER, nullable=False, default=0)  # 定单状态，0代付款，1待发货，2待收货，3已签收，4已取消
-    payment_method = db.Column(db.INTEGER, nullable=False)  # 付款方式，0支付宝，1银联，2ebay，3微信
+    status = db.Column(db.INTEGER, nullable=False, default=0)  # 定单状态，0代付款，1待发货，2待收货，3已签收，4已取消,-1未支付
+    payment_method = db.Column(db.INTEGER, nullable=False)  # 付款方式，0支付宝，1银联，2ebay，3微信，-1未支付
 
     products = db.relationship('Product', backref='order_form', secondary='order_product', lazy='dynamic')
     address = db.relationship('ShippingAddress', backref=db.backref('order_form', uselist=False))

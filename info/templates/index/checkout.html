@@ -267,11 +267,7 @@
                                     </div>
                                 </div>
 
-                                <div class="single-input-item">
-                                    <label for="ordernote">Order Note</label>
-                                    <textarea name="ordernote" id="ordernote" cols="30" rows="3"
-                                              placeholder="Notes about your order, e.g. special notes for delivery."></textarea>
-                                </div>
+
                             </form>
                         </div>
                     </div>
@@ -400,12 +396,32 @@
                 var town = $('#town').val()
                 var state = $('#state').val()
                 var phone = $('#phone').val()
-                alert(username)
-                alert(email)
-                alert(street_address)
-                alert(town)
-                alert(state)
-                alert(phone)
+                var params = {
+                    'username':username,
+                    'email':email,
+                    'street_address':street_address,
+                    'town':town,
+                    'state':state,
+                    'phone':phone,
+                }
+                $.ajax({
+                url: "/checkout",
+                type: "post",
+                data: JSON.stringify(params),
+                contentType: "application/json",
+                dataType: 'json',
+                success: function (data) {
+                    if (data.errno == "0") {
+                        alert('提交成功')
+                        window.location.reload()
+                    } else {
+                        alert(data.errmsg)
+                    }
+                },
+                error: function (e) {
+                    alert('网络不好，提交失败')
+                }
+            })
             })
 
         })
