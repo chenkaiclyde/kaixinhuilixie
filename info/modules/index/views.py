@@ -350,10 +350,24 @@ def user_exit():
     return redirect('/')
 
 
-@index_blu.route('/car_rmproduct')
+@index_blu.route('/car_rmproduct', methods=['POST'])
+@user_login_data
 def car_rmproduct():
     '''购物车删除'''
     user = g.user
-
+    # 判断用户是否登录
     if not user:
         return jsonify(errno=RET.SESSIONERR, errmsg='用户未登录')
+    # 获取当前用户的user_id
+    user_id = user.id
+    # 获取shoes_id
+    shoes_id = request.json.get('shoes_id')
+    # 判断shoes_id是否存在
+    if not shoes_id:
+        return jsonify(errno=RET.PARAMERR, errmsg='参数错误')
+    # 获取购物车中的对象
+    try:
+        shop_car_p = ShopCar.query.filter(ShopCar.user_id == user_id, ShopCar.product_id == shoes_id).first
+    except Exception as e:
+        current_app.logger.error(e)
+        return jsonify(errno=RET.DBERR, errmsg='数据查询错误')

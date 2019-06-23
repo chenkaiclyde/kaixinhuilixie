@@ -204,7 +204,8 @@ class ShopCar(db.Model):
 
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), primary_key=True)  # 用户id
     product_id = db.Column(db.Integer, db.ForeignKey('product.id'), primary_key=True)  # 商品id
-    nums = db.Column(db.Integer, default=1, nullable=False)
+    nums = db.Column(db.Integer, default=1, nullable=False)  # 数据库中的数量
+    is_remove = db.Column(db.INTEGER, default=0)  # 是否移除
 
     user = db.relationship('User', backref='shop_car')
     products = db.relationship("Product", backref='shop_car')

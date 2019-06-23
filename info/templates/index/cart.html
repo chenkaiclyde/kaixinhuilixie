@@ -96,7 +96,7 @@
                                             <div class="pro-qty"><input type="text" value="{{ shoes.add_nums }}"></div>
                                         </td>
                                         <td class="pro-subtotal"><span>￥{{ shoes.shoes_total_price }}</span></td>
-                                        <td class="pro-remove"><a href="/car_rmproduct" shoes-id="{{ shoes.id }}"
+                                        <td class="pro-remove"><a href="#" shoes-id="{{ shoes.id }}"
                                                                   id="car_rmproduct"><i
                                                 class="fa fa-trash-o"></i></a></td>
                                     </tr>
@@ -148,11 +148,13 @@
 {% endblock %}
 {% block js_block %}
     <script>
-        $('#car_rmproduct').click(function () {
+        $('#car_rmproduct').click(function (e) {
+            e.preventDefault()
             var shoes_id = $(this).attr('shoes-id')
             var params = {
                 'shoes_id': shoes_id,
             }
+            alert(params.shoes_id)
             $.ajax({
                 url: "/car_rmproduct",
                 type: "post",
@@ -168,7 +170,7 @@
                     }
                 },
                 error: function (e) {
-                    alert('网络不好，注册失败')
+                    alert('网络不好，删除失败')
                 }
             })
         })
