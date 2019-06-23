@@ -185,8 +185,15 @@ def myAccount():
 
 
 @index_blu.route('/productDetails')
+@user_login_data
 def productDetailsVariable():
     '''商品详情页'''
+    # 获取登录的用户
+    user = g.user
+    # 给user_info一个默认值
+    user_info = None
+    if user:
+        user_info = user.to_dict()
     # 获取鞋子的id
     shoe_id = request.args.get('id')
     if not shoe_id:
@@ -215,6 +222,7 @@ def productDetailsVariable():
         if product_sc['size_name'] not in colors:
             sizes.append(product_sc['size_name'])
     data = {
+        'user_info': user_info,
         "shoes_info": shoes.to_dict(),
         'product_size_colors': product_sc_list,
         'colors': colors,
@@ -271,3 +279,10 @@ def add_car():
         db.session.rollback()
         return jsonify(errno=RET.DBERR, errmsg='数据查询错误')
     return jsonify(errno=RET.OK, errmsg='添加成功')
+
+
+@index_blu.route('/user_exit')
+def user_exit():
+    session.pop('user_id')
+    session.pop('username')
+    return redirect('/')
