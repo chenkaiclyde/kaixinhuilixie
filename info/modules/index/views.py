@@ -1,4 +1,5 @@
 import datetime
+import traceback
 
 from flask import render_template, current_app, request, jsonify, session, g, abort, redirect, url_for
 
@@ -29,6 +30,27 @@ def index():
     new_shoes_dict_list = []
     for shoes in new_shoes_list:
         new_shoes_dict_list.append(shoes.to_basic_dict())
+    # 用户添加到购物车的鞋子
+    collect_shoes = None
+    # 查询用户购物车里所有的商品
+    try:
+        collect_shoes = user.shop_car
+    except Exception as e:
+        traceback.print_exc()
+        current_app.logger.error(e)
+    print('collect_shoes')
+    print(collect_shoes)
+    # 将购物车商品放入一个列表
+    c_shoes_list = []
+    c_shoes_dict_list = []
+    if len(collect_shoes) > 0:
+        for c_shoes in collect_shoes:
+            c_shoes_list.append(Product.query.get(c_shoes.product_id))
+    print(c_shoes_list)
+    # 把购物车商品的对象信息对应的字典返回给浏览器
+    if len(c_shoes_list)>0:
+        for c_p in c_shoes_list:
+            c_shoes_dict_list.append(c_p.to)
     data = {
         'user_info': user_info,
         'new_shoes_dict_list': new_shoes_dict_list,
@@ -63,7 +85,8 @@ def checkout():
     data = {}
     return render_template('index/checkout.html', data=data)
 
-#陈老板辛苦了,小弟与你同在
+
+# 陈老板辛苦了,小弟与你同在
 @index_blu.route('/compare')
 def compare():
     '''比较'''

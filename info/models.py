@@ -194,7 +194,8 @@ class ShopCar(db.Model):
     __tablename__ = "shop_car"
 
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), primary_key=True)  # 用户id
-    product_id = db.Column(db.Integer, db.ForeignKey('product.id'), primary_key=True, )  # 商品id
+    product_id = db.Column(db.Integer, db.ForeignKey('product.id'), primary_key=True)  # 商品id
+    nums = db.Column(db.Integer,default=1,nullable=False)
 
-    user = db.relationship('User', backref=db.backref('shop_car', uselist=False))
+    user = db.relationship('User', backref='shop_car')
     products = db.relationship("Product", backref='shop_car')
