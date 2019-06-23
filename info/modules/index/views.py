@@ -63,7 +63,7 @@ def checkout():
     data = {}
     return render_template('index/checkout.html', data=data)
 
-
+#陈老板辛苦了,小弟与你同在
 @index_blu.route('/compare')
 def compare():
     '''比较'''
