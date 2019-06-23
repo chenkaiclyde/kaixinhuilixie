@@ -306,6 +306,7 @@ def wishlist():
 @index_blu.route('/add_car', methods=['POST', 'GET'])
 @user_login_data
 def add_car():
+    '''添加购物车'''
     user = g.user
     if not user:
         return jsonify(errno=RET.SESSIONERR, errmsg='请先登录')
@@ -343,6 +344,16 @@ def add_car():
 
 @index_blu.route('/user_exit')
 def user_exit():
+    '''用户退出'''
     session.pop('user_id')
     session.pop('username')
     return redirect('/')
+
+
+@index_blu.route('/car_rmproduct')
+def car_rmproduct():
+    '''购物车删除'''
+    user = g.user
+
+    if not user:
+        return jsonify(errno=RET.SESSIONERR, errmsg='用户未登录')

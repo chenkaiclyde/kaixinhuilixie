@@ -42,7 +42,7 @@
 
 
 
-    {% block mainblock %}
+{% block mainblock %}
     <!-- breadcrumb area start -->
     <div class="breadcrumb-area breadcrumb-img bg-img" data-bg="../../static/index/assets/img/banner/shop.jpg">
         <div class="container">
@@ -153,78 +153,79 @@
             </div>
         </div>
     </div>
-    {% endblock %}
+{% endblock %}
 {% block view_model_block %}
 {% endblock %}
 {% block js_block %}
-    $(function () {
-        $("#loginbtn").click(function (e) {
-            e.preventDefault();
-            var email = $("#loginuser").val();
-            var password = $("#loginpwd").val()
+    <script>
+        $(function () {
+            $("#loginbtn").click(function (e) {
+                e.preventDefault();
+                var email = $("#loginuser").val();
+                var password = $("#loginpwd").val()
 
-            params = {
-                "email": email,
-                "password": password,
-            };
-            // 发起登录请求
-            $.ajax({
-                url: '/login',
-                type: 'post',
-                data: JSON.stringify(params),
-                //mime type
-                contentType: "application/json",//上传类型
-                dataType: "json",//返回的类型
-                success: function (data) {
-                    if (data.errno == "0") {
-                        //  登录成功  刷新页面
-                        window.location.href = '/'
-                    } else {
-                        alert(data.errmsg)
+                params = {
+                    "email": email,
+                    "password": password,
+                };
+                // 发起登录请求
+                $.ajax({
+                    url: '/login',
+                    type: 'post',
+                    data: JSON.stringify(params),
+                    //mime type
+                    contentType: "application/json",//上传类型
+                    dataType: "json",//返回的类型
+                    success: function (data) {
+                        if (data.errno == "0") {
+                            //  登录成功  刷新页面
+                            window.location.href = '/'
+                        } else {
+                            alert(data.errmsg)
+                        }
+
+                    },
+                    error: function (e) {
+                        alert('网络不好，稍后再试')
                     }
-
-                },
-                error: function (e) {
-                    alert('网络不好，稍后再试')
+                })
+            })
+            // TODO 注册按钮点击
+            $("#register").click(function (e) {
+                e.preventDefault();
+                // 取到用户输入的内容
+                var username = $("#register_username").val()
+                var email = $("#register_email").val()
+                var password = $("#register_password").val()
+                var repeatpassword = $("#register_repeatpassword").val()
+                // 发起注册请求
+                var params = {
+                    "username": username,
+                    "email": email,
+                    "password": password,
+                    "repeatpassword": repeatpassword,
                 }
+
+                $.ajax({
+                    url: "/register",
+                    type: "post",
+                    data: JSON.stringify(params),
+                    contentType: "application/json",
+                    dataType: 'json',
+                    success: function (data) {
+                        if (data.errno == "0") {
+                            window.location.href = '/'
+                        } else {
+                            alert(data.errmsg)
+                        }
+                    },
+                    error: function (e) {
+                        alert('网络不好，注册失败')
+                    }
+                })
+
+
             })
         })
-        // TODO 注册按钮点击
-        $("#register").click(function (e) {
-            e.preventDefault();
-            // 取到用户输入的内容
-            var username = $("#register_username").val()
-            var email = $("#register_email").val()
-            var password = $("#register_password").val()
-            var repeatpassword = $("#register_repeatpassword").val()
-            // 发起注册请求
-            var params = {
-                "username": username,
-                "email": email,
-                "password": password,
-                "repeatpassword": repeatpassword,
-            }
-
-            $.ajax({
-                url: "/register",
-                type: "post",
-                data: JSON.stringify(params),
-                contentType: "application/json",
-                dataType: 'json',
-                success: function (data) {
-                    if (data.errno == "0") {
-                        window.location.href = '/'
-                    } else {
-                        alert(data.errmsg)
-                    }
-                },
-                error: function (e) {
-                    alert('网络不好，注册失败')
-                }
-            })
-
-
-        })
-    })
-
+    </script>
 {% endblock %}
