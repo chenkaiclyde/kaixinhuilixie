@@ -364,7 +364,7 @@ def myAccount():
     if len(collect_shoes) > 0:
         for c_shoes in collect_shoes:
             # 判断鞋子数量是否大于0,是否被删除
-            if c_shoes.nums > 0 and c_shoes.is_remove == 0:
+            if c_shoes.nums > 0 and c_shoes.is_remove == -1:
                 # 向商品信息添加一个属性all_nums，值为数据库里存放的shop_car中的nums
                 shoes_dict = Product.query.get(c_shoes.product_id).to_head_collect_dict()
                 shoes_dict['add_nums'] = c_shoes.nums
