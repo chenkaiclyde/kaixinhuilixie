@@ -388,6 +388,8 @@ def productDetailsVariable():
     except Exception as e:
         traceback.print_exc()
         current_app.logger.error(e)
+    # 总价
+    total_price = 0
     # 将购物车商品放入一个列表
     c_shoes_dict_list = []
     if len(collect_shoes) > 0:
@@ -400,6 +402,8 @@ def productDetailsVariable():
                 c_shoes_dict_list.append(shoes_dict)
                 # 单个商品总价
                 shoes_dict['shoes_total_price'] = shoes_dict['price'] * shoes_dict['add_nums']
+                # 总价
+                total_price += shoes_dict['price'] * shoes_dict['add_nums']
     data = {
         'user_info': user_info,
         "shoes_info": shoes.to_dict(),
@@ -407,6 +411,7 @@ def productDetailsVariable():
         'colors': colors,
         'sizes': sizes,
         'c_shoes_dict_list': c_shoes_dict_list,
+        'total_price': total_price,
     }
     return render_template('index/product-details-variable.html', data=data)
 
