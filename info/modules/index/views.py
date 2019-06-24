@@ -186,7 +186,6 @@ def checkout():
     s_addr.phoneNumber = phone
     try:
         db.session.add(s_addr)
-        db.session.commit()
     except Exception as e:
         current_app.logger.error(e)
         db.session.rollback()
