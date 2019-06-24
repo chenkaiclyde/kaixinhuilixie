@@ -4,7 +4,7 @@
 
 
 
-    {% block mainblock %}
+{% block mainblock %}
     <!-- breadcrumb area start -->
     <div class="breadcrumb-area breadcrumb-img bg-img" data-bg="../../static/index/assets/img/banner/shop.jpg">
         <div class="container">
@@ -63,14 +63,13 @@
                                         <div class="tab-pane fade show active" id="dashboad" role="tabpanel">
                                             <div class="myaccount-content">
                                                 <h5>Dashboard</h5>
-                                                <div class="welcome">
-                                                    <p>Hello, <strong>Erik Jhonson</strong> (If Not <strong>Jhonson
-                                                        !</strong><a href="login-register.html" class="logout">
-                                                        Logout</a>)</p>
-                                                </div>
-                                                <p class="mb-0">From your account dashboard. you can easily check &
-                                                    view your recent orders, manage your shipping and billing addresses
-                                                    and edit your password and account details.</p>
+                                                {% if data.user_info %}
+                                                    <div class="welcome">
+                                                        <p>你好, <strong>{{ data.user_info.username }}</strong></p>
+                                                    </div>
+                                                {% endif %}
+                                                <p class="mb-0">从您的帐户仪表板。您可以轻松地检查和查看您最近的订单，
+                                                    管理您的发货和账单地址，并编辑您的密码和帐户详细信息。</p>
                                             </div>
                                         </div>
                                         <!-- Single Tab Content End -->
@@ -263,7 +262,7 @@
         </div>
     </div>
     <!-- my account wrapper end -->
-    {% endblock %}
+{% endblock %}
 
 {% block view_model_block %}
 {% endblock %}
