@@ -126,7 +126,7 @@ def cart():
     return render_template('index/cart.html', data=data)
 
 
-@index_blu.route('/checkout',methods=['POST','GET'])
+@index_blu.route('/checkout', methods=['POST', 'GET'])
 @user_login_data
 def checkout():
     '''结账页面'''
@@ -136,7 +136,7 @@ def checkout():
             return redirect('/')
         user_info = user.to_dict()
         # 查询用户购物车里所有的商品
-        collect_shoes=[]
+        collect_shoes = []
         try:
             collect_shoes = user.shop_car
         except Exception as e:
@@ -172,7 +172,7 @@ def checkout():
     town = params_dict.get('town')
     state = params_dict.get('state')
     phone = params_dict.get('phone')
-    if not all([username,email,street_address,town,state,phone]):
+    if not all([username, email, street_address, town, state, phone]):
         return jsonify(errno=RET.PARAMERR, errmsg="参数不足")
     user = g.user
     if not user:
@@ -181,7 +181,7 @@ def checkout():
 
     s_addr = ShippingAddress()
     s_addr.user_id = user.id
-    s_addr.address = state+'%%'+town+'%%'+street_address
+    s_addr.address = state + '%%' + town + '%%' + street_address
     s_addr.nickname = username
     s_addr.phoneNumber = phone
     try:
@@ -192,7 +192,7 @@ def checkout():
         db.session.rollback()
         return jsonify(errno=RET.SESSIONERR, errmsg="订单创建失败")
     # 创建订单对象
-    print('s_addr.id-------------',s_addr.id)
+    print('s_addr.id-------------', s_addr.id)
     order_form = OrderForm()
     order_form.user_id = user.id
 
@@ -572,3 +572,39 @@ def update_cart():
         db.session.rollback()
         return jsonify(errno=RET.DBERR, errmsg='刷新失败')
     return jsonify(errno=RET.OK, errmsg='刷新成功')
+
+
+@index_blu.route('/save', methods=["GET", "POST"])
+@user_login_data
+def save():
+    """修改密码"""
+
+    # 1获取参数
+    nb_data = request.json
+    current_pwd = nb_data.get('current-pwd')
+    new_pwd = nb_data.get('new-pwd')
+    display_name = nb_data.get('display-name')
+    last_name = nb_data.get('last-name')
+    new_email = nb_data.get('email')
+    print(current_pwd,new_pwd,display_name,last_name,new_email)
+
+    # 2判断是否为空g
+    if not all([current_pwd, new_pwd,display_name,last_name,new_email]):
+        return jsonify(errno=RET.PARAMERR, errmsg="参数有误")
+
+    user = g.user
+    if not user.check_password(current_pwd):
+        return jsonify(errno=RET.PWDERR, errmsg="密码错误")
+
+    # 4更新密码
+    user.password = new_pwd
+    user.username = last_name
+    user.email = new_email
+    try:
+        db.session.commit()
+    except Exception as e:
+        current_app.logger.error(e)
+        db.session.rollback()
+        return jsonify(errno=RET.DBERR, errmsg="保存数据失败")
+
+    return jsonify(errno=RET.OK, errmsg="保存成功")

@@ -42,11 +42,6 @@
                                             Dashboard</a>
                                         <a href="#orders" data-toggle="tab"><i class="fa fa-cart-arrow-down"></i>
                                             Orders</a>
-                                        <a href="#download" data-toggle="tab"><i class="fa fa-cloud-download"></i>
-                                            Download</a>
-                                        <a href="#payment-method" data-toggle="tab"><i class="fa fa-credit-card"></i>
-                                            Payment
-                                            Method</a>
                                         <a href="#address-edit" data-toggle="tab"><i class="fa fa-map-marker"></i>
                                             Address</a>
                                         <a href="#account-info" data-toggle="tab"><i class="fa fa-user"></i> Account
@@ -119,54 +114,7 @@
                                                 </div>
                                             </div>
                                         </div>
-                                        <!-- Single Tab Content End -->
 
-                                        <!-- Single Tab Content Start -->
-                                        <div class="tab-pane fade" id="download" role="tabpanel">
-                                            <div class="myaccount-content">
-                                                <h5>Downloads</h5>
-                                                <div class="myaccount-table table-responsive text-center">
-                                                    <table class="table table-bordered">
-                                                        <thead class="thead-light">
-                                                        <tr>
-                                                            <th>Product</th>
-                                                            <th>Date</th>
-                                                            <th>Expire</th>
-                                                            <th>Download</th>
-                                                        </tr>
-                                                        </thead>
-                                                        <tbody>
-                                                        <tr>
-                                                            <td>PRIMITIVE MENS SHOES</td>
-                                                            <td>Aug 22, 2018</td>
-                                                            <td>Yes</td>
-                                                            <td><a href="#" class="btn btn-sqr"><i
-                                                                    class="fa fa-cloud-download"></i>
-                                                                Download File</a></td>
-                                                        </tr>
-                                                        <tr>
-                                                            <td>REXPO WOMENS SHOES</td>
-                                                            <td>Sep 12, 2018</td>
-                                                            <td>Never</td>
-                                                            <td><a href="#" class="btn btn-sqr"><i
-                                                                    class="fa fa-cloud-download"></i>
-                                                                Download File</a></td>
-                                                        </tr>
-                                                        </tbody>
-                                                    </table>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <!-- Single Tab Content End -->
-
-                                        <!-- Single Tab Content Start -->
-                                        <div class="tab-pane fade" id="payment-method" role="tabpanel">
-                                            <div class="myaccount-content">
-                                                <h5>Payment Method</h5>
-                                                <p class="saved-message">You Can't Saved Your Payment Method yet.</p>
-                                            </div>
-                                        </div>
-                                        <!-- Single Tab Content End -->
 
                                         <!-- Single Tab Content Start -->
                                         <div class="tab-pane fade" id="address-edit" role="tabpanel">
@@ -246,7 +194,7 @@
                                                             </div>
                                                         </fieldset>
                                                         <div class="single-input-item">
-                                                            <button class="btn btn-sqr">Save Changes</button>
+                                                            <button class="save">Save Changes</button>
                                                         </div>
                                                     </form>
                                                 </div>
@@ -268,5 +216,59 @@
 {% endblock %}
 
 {% block js_block %}
+<script>
+$(function () {
+    $(".save").click(function (e) {
 
+
+        // TODO 修改信息
+
+
+
+        var last_name = $("#last-name").val();
+        var display_name = $("#display-name").val()
+        var current_pwd = $("#current-pwd").val()
+        var new_pwd = $("#new-pwd").val()
+        var confirm_pwd = $("#confirm-pwd").val()
+        var email = $("#email").val()
+
+                params = {
+                    "email": email,
+                    "current-pwd": current_pwd,
+                    "last-name":last_name,
+                    "display-name":display_name,
+                    "confirm-pwd":confirm_pwd,
+                    "new-pwd":new_pwd
+                };
+
+
+
+        if (new_pwd != confirm_pwd) {
+            alert('两次密码输入不一致')
+            return
+        }
+       if (last_name != display_name) {
+            alert('两次用户名输入不一致')
+            return
+        }
+
+        $.ajax({
+            url: '/save',
+            type: 'post',
+            contentType: "application/json",
+            data: JSON.stringify(params),
+            success: function (resp) {
+                if (resp.errno == "0") {
+                    // 修改成功
+                    alert("修改成功")
+                    window.location.reload()
+                } else {
+                    alert(resp.errmsg)
+                }
+            }
+        })
+
+    })
+})
+</script>
 {% endblock %}
