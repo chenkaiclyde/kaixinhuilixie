@@ -186,11 +186,13 @@ def checkout():
     s_addr.phoneNumber = phone
     try:
         db.session.add(s_addr)
+        db.session.commit()
     except Exception as e:
         current_app.logger.error(e)
         db.session.rollback()
         return jsonify(errno=RET.SESSIONERR, errmsg="订单创建失败")
     # 创建订单对象
+    print('s_addr.id-------------',s_addr.id)
     order_form = OrderForm()
     order_form.user_id = user.id
 
