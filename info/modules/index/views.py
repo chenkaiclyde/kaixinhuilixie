@@ -234,9 +234,78 @@ def compare():
 
 
 @index_blu.route('/contactUs')
+@user_login_data
 def contactUs():
     '''联系我们页面'''
-    data = {}
+    # 获取登录的用户
+    user = g.user
+    # 给user_info一个默认值
+    user_info = None
+    if user:
+        user_info = user.to_dict()
+        # 用户添加到购物车的鞋子
+    collect_shoes = None
+    # 查询用户购物车里所有的商品
+    try:
+        collect_shoes = user.shop_car
+    except Exception as e:
+        traceback.print_exc()
+        current_app.logger.error(e)
+    # 总价
+    total_price = 0
+    # 将购物车商品放入一个列表
+    c_shoes_dict_list = []
+    if len(collect_shoes) > 0:
+        for c_shoes in collect_shoes:
+            # 判断鞋子数量是否大于0,是否被删除
+            if c_shoes.nums > 0 and c_shoes.is_remove == 0:
+                # 向商品信息添加一个属性all_nums，值为数据库里存放的shop_car中的nums
+                shoes_dict = Product.query.get(c_shoes.product_id).to_head_collect_dict()
+                shoes_dict['add_nums'] = c_shoes.nums
+                c_shoes_dict_list.append(shoes_dict)
+                # 总价
+                total_price += shoes_dict['price'] * shoes_dict['add_nums']
+                # 单个商品总价
+                shoes_dict['shoes_total_price'] = shoes_dict['price'] * shoes_dict['add_nums']
+    data = {
+        'user_info': user_info,
+        'c_shoes_dict_list': c_shoes_dict_list,
+        'total_price': total_price,
+    }  # 获取登录的用户
+    user = g.user
+    # 给user_info一个默认值
+    user_info = None
+    if user:
+        user_info = user.to_dict()
+        # 用户添加到购物车的鞋子
+    collect_shoes = None
+    # 查询用户购物车里所有的商品
+    try:
+        collect_shoes = user.shop_car
+    except Exception as e:
+        traceback.print_exc()
+        current_app.logger.error(e)
+    # 总价
+    total_price = 0
+    # 将购物车商品放入一个列表
+    c_shoes_dict_list = []
+    if len(collect_shoes) > 0:
+        for c_shoes in collect_shoes:
+            # 判断鞋子数量是否大于0,是否被删除
+            if c_shoes.nums > 0 and c_shoes.is_remove == 0:
+                # 向商品信息添加一个属性all_nums，值为数据库里存放的shop_car中的nums
+                shoes_dict = Product.query.get(c_shoes.product_id).to_head_collect_dict()
+                shoes_dict['add_nums'] = c_shoes.nums
+                c_shoes_dict_list.append(shoes_dict)
+                # 总价
+                total_price += shoes_dict['price'] * shoes_dict['add_nums']
+                # 单个商品总价
+                shoes_dict['shoes_total_price'] = shoes_dict['price'] * shoes_dict['add_nums']
+    data = {
+        'user_info': user_info,
+        'c_shoes_dict_list': c_shoes_dict_list,
+        'total_price': total_price,
+    }
     return render_template('index/contact-us.html', data=data)
 
 
@@ -613,17 +682,17 @@ def save():
     last_name = nb_data.get('last-name')
     new_email = nb_data.get('email')
     first_name = nb_data.get("first_name")
-    print(current_pwd,new_pwd,display_name,last_name,new_email)
+    print(current_pwd, new_pwd, display_name, last_name, new_email)
 
     # 2判断是否为空g
-    if not all([current_pwd, new_pwd,display_name,last_name,new_email]):
+    if not all([current_pwd, new_pwd, display_name, last_name, new_email]):
         return jsonify(errno=RET.PARAMERR, errmsg="参数有误")
 
     user = g.user
     if not user.check_password(current_pwd):
         return jsonify(errno=RET.PWDERR, errmsg="密码错误")
     if not user.username == first_name:
-        return jsonify(errno=RET.PWDERR,errmsg="用户名错误")
+        return jsonify(errno=RET.PWDERR, errmsg="用户名错误")
     # 4更新密码
     user.password = new_pwd
     user.username = last_name
