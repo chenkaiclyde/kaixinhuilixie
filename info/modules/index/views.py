@@ -586,6 +586,7 @@ def save():
     display_name = nb_data.get('display-name')
     last_name = nb_data.get('last-name')
     new_email = nb_data.get('email')
+    first_name = nb_data.get("first_name")
     print(current_pwd,new_pwd,display_name,last_name,new_email)
 
     # 2判断是否为空g
@@ -595,7 +596,8 @@ def save():
     user = g.user
     if not user.check_password(current_pwd):
         return jsonify(errno=RET.PWDERR, errmsg="密码错误")
-
+    if not user.username == first_name:
+        return jsonify(errno=RET.PWDERR,errmsg="用户名错误")
     # 4更新密码
     user.password = new_pwd
     user.username = last_name
