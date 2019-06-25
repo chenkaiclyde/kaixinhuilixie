@@ -34,7 +34,8 @@ def index():
     collect_shoes = []
     # 查询用户购物车里所有的商品
     try:
-        collect_shoes = user.shop_car
+        if user:
+            collect_shoes = user.shop_car
     except Exception as e:
         traceback.print_exc()
         current_app.logger.error(e)
